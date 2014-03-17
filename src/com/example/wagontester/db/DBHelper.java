@@ -12,7 +12,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	static DBHelper mInstance = null;
 	
 	public static int getDatabaseVersion() {
-		return DBContract.VERSION + DBPresetter.VERSION;
+		return DBContract.VERSION + DBPresetter.VERSION<<8;
 	}
 	
 	public DBHelper(Context context) {

@@ -5,7 +5,7 @@
 		    <solid android:color="#44ffffff" />
 		    <stroke
 		        android:width="3dp"
-		        android:color="@color/metro_orange" />	 
+		        android:color="@color/metro_orange" />
 		</shape>
 	</item>
 	<item android:state_focused="true">

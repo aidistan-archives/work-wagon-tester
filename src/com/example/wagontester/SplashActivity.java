@@ -48,11 +48,11 @@ public class SplashActivity extends Activity{
 	}
 	
 	private void preset() {
-		SharedPreferences.Editor mSpAppEditor = mSpApp.edit();
-		mSpAppEditor.putInt(DEFAULT_KEY_VERSION, DBHelper.getDatabaseVersion());
-		mSpAppEditor.putString(DEFAULT_KEY_HOSTIP, DEFAULT_VALUE_HOSTIP);
-		mSpAppEditor.putString(DEFAULT_KEY_ROOTPWD, DEFAULT_VALUE_ROOTPWD);
-		mSpAppEditor.commit();
+		SharedPreferences.Editor editor = mSpApp.edit();
+		editor.putInt(DEFAULT_KEY_VERSION, DBHelper.getDatabaseVersion());
+		editor.putString(DEFAULT_KEY_HOSTIP, DEFAULT_VALUE_HOSTIP);
+		editor.putString(DEFAULT_KEY_ROOTPWD, DEFAULT_VALUE_ROOTPWD);
+		editor.commit();
 
 		// Preset database
 		DBPresetter.preset(getContentResolver());

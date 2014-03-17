@@ -3,14 +3,15 @@ package com.example.wagontester;
 import java.util.ArrayList;
 
 import com.example.wagontester.R;
+import com.example.wagontester.common.TaskView;
 import com.example.wagontester.db.DBContract;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -105,6 +106,7 @@ public class MainActivity extends Activity {
 		});
 		
 		mSearchTextAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, new ArrayList<String>());
+		mSearchTextView = (AutoCompleteTextView)findViewById(R.id.autoCompleteTextView);
 		mSearchTextView.setAdapter(mSearchTextAdapter);
 		mSearchTextView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -122,7 +124,6 @@ public class MainActivity extends Activity {
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		Log.v("aidi", String.valueOf(keyCode));
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
 		case KeyEvent.KEYCODE_HOME:
@@ -164,17 +165,43 @@ public class MainActivity extends Activity {
 
 		@Override
 		public void bindView(View view, Context context, Cursor cursor) {  
-//			TaskView taskView = (TaskView)view;
-//			taskView.setWagonID(cursor.getInt(cursor.getColumnIndex(DBHelper.TaskTable.WAGON_ID)));
-//			taskView.setModelNumber(cursor.getString(cursor.getColumnIndex(DBHelper.TaskTable.MODEL_NAME)));
-//			taskView.setUsername(cursor.getString(cursor.getColumnIndex(DBHelper.TaskTable.USERNAME)));
-//			taskView.setDate(cursor.getString(cursor.getColumnIndex(DBHelper.TaskTable.DATE)));
-//			taskView.setFinished(cursor.getInt(cursor.getColumnIndex(DBHelper.TaskTable.IS_FINISHED)) == 1);
+			TaskView taskView = (TaskView)view;
+			
+			// Icon
+			if (cursor.getInt(DBContract.TaskTable.POS_STATUS) == 1) {
+				taskView.imageView.setVisibility(View.VISIBLE);
+			} else {
+				taskView.imageView.setVisibility(View.INVISIBLE);
+			}
+			
+			// String
+			taskView.wagonView.setText(cursor.getString(DBContract.TaskTable.POS_WAGON));
+			taskView.platformView.setText(cursor.getString(DBContract.TaskTable.POS_PLATFORM));
+			taskView.dateView.setText(cursor.getString(DBContract.TaskTable.POS_DATE));
+			
+			// ID
+			Cursor c;
+			c = context.getContentResolver().query(
+					Uri.withAppendedPath(DBContract.UserTable.CONTENT_URI, String.valueOf(cursor.getInt(DBContract.TaskTable.POS_USER))), 
+					null, null, null, null);
+			c.moveToFirst();
+			taskView.userView.setText(c.getString(DBContract.UserTable.POS_NAME));
+			c = context.getContentResolver().query(
+					Uri.withAppendedPath(DBContract.DutyTable.CONTENT_URI, String.valueOf(cursor.getInt(DBContract.TaskTable.POS_DUTY))), 
+					null, null, null, null);
+			c.moveToFirst();
+			taskView.dutyView.setText(c.getString(DBContract.DutyTable.POS_NAME));
+			c = context.getContentResolver().query(
+					Uri.withAppendedPath(DBContract.ModelTable.CONTENT_URI, String.valueOf(cursor.getInt(DBContract.TaskTable.POS_MODEL))), 
+					null, null, null, null);
+			c.moveToFirst();
+			taskView.modelView.setText(c.getString(DBContract.ModelTable.POS_NAME));
 		}
 
 		@Override
 		public View newView(Context context, Cursor cursor, ViewGroup parent) {
-//			return new TaskView(context, null);
+			return new TaskView(context, null);
+
 		}
 		
 //		public void requery() {
