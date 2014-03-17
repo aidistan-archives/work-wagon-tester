@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="metro_blue">#ff00aeef</color>
+    <color name="metro_red">#ffea428a</color>
+    <color name="metro_yellow">#ffeed500</color>
+    <color name="metro_orange">#fff5a70d</color>
+    <color name="metro_green">#ff8bcb30</color>
+    <color name="metro_purple">#ff9962c1</color>
+    <color name="metro_gray">#ff999999</color>
+    <color name="normal_text">#ffdddddd</color>
+</resources>
