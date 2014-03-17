@@ -20,15 +20,12 @@
 		    android:visibility="visible"/>
 	</FrameLayout>
 
-    <LinearLayout 
+    <TableLayout 
 	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:orientation="vertical">
-	    <LinearLayout
-	    	android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:orientation="horizontal"
-	        android:baselineAligned="false">
+	    android:layout_height="wrap_content">
+		
+	    <TableRow
+	        android:layout_height="wrap_content">
 			<LinearLayout
 		    	android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
@@ -50,10 +47,6 @@
 			        android:textColor="@color/normal_text"
 			        />  
 		    </LinearLayout>
-		    <LinearLayout
-	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content"
-	            android:layout_weight="1">
 
 			    <TextView
 			        android:id="@+id/userView"
@@ -76,15 +69,11 @@
 			        android:textSize="@dimen/text_middle"
 			        android:textColor="@color/normal_text"
 			        />
-		    </LinearLayout>
-		</LinearLayout>
+		</TableRow>
 	    
-		<LinearLayout
-	    	android:layout_width="match_parent"
+		<TableRow
 	        android:layout_height="wrap_content"
-	        android:layout_marginTop="2dp"
-	        android:orientation="horizontal"
-	        android:baselineAligned="false">
+	        android:layout_marginTop="2dp">
 	       	<LinearLayout
 	            android:layout_width="match_parent"
 	            android:layout_height="wrap_content"
@@ -145,6 +134,6 @@
 			        android:textSize="@dimen/text_xsmall"
 			        android:textColor="@color/normal_text"/>
 		    </LinearLayout>
-	    </LinearLayout>
-    </LinearLayout>
+	    </TableRow>
+    </TableLayout>
 </LinearLayout>
