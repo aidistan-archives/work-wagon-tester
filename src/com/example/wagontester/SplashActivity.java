@@ -30,7 +30,8 @@ public class SplashActivity extends Activity{
 
         // Ô¤ÖÃÊý¾Ý
 		mSpApp = getSharedPreferences("app", MODE_PRIVATE);
-		if(!mSpApp.contains(DEFAULT_KEY_VERSION) || mSpApp.getInt(DEFAULT_KEY_VERSION, 0)!=(DBHelper.DATABASE_VERSION)) {
+		if(!mSpApp.contains(DEFAULT_KEY_VERSION) || 
+			mSpApp.getInt(DEFAULT_KEY_VERSION, 0)!=DBHelper.getDatabaseVersion()) {
 			preset();
 		}
 		
@@ -48,7 +49,7 @@ public class SplashActivity extends Activity{
 	
 	private void preset() {
 		SharedPreferences.Editor mSpAppEditor = mSpApp.edit();
-		mSpAppEditor.putInt(DEFAULT_KEY_VERSION, DBHelper.DATABASE_VERSION);
+		mSpAppEditor.putInt(DEFAULT_KEY_VERSION, DBHelper.getDatabaseVersion());
 		mSpAppEditor.putString(DEFAULT_KEY_HOSTIP, DEFAULT_VALUE_HOSTIP);
 		mSpAppEditor.putString(DEFAULT_KEY_ROOTPWD, DEFAULT_VALUE_ROOTPWD);
 		mSpAppEditor.commit();

@@ -7,6 +7,8 @@ import android.content.ContentValues;
  *  Preset Tables
  */
 public class DBPresetter {
+	public static final int VERSION = 1<<3;
+	
 	private static ContentResolver cr;
 	
 	public static void preset(ContentResolver contentResolver) {
@@ -15,6 +17,15 @@ public class DBPresetter {
 		set_users();
 		set_duties();
 		set_models();
+		
+		ContentValues cv = new ContentValues();
+		cv.put(DBContract.TaskTable.KEY_USER, 1);
+		cv.put(DBContract.TaskTable.KEY_DUTY, 1);
+		cv.put(DBContract.TaskTable.KEY_MODEL, 1);
+		cv.put(DBContract.TaskTable.KEY_PLATFORM, "12");
+		cv.put(DBContract.TaskTable.KEY_DATE, "2014/03/17");
+		cv.put(DBContract.TaskTable.KEY_WAGON, "123456");
+		cr.insert(DBContract.TaskTable.CONTENT_URI, cv);
 	}
 
 	private static void set_users() {

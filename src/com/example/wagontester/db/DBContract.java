@@ -7,6 +7,8 @@ import android.provider.BaseColumns;
  * ÆõÔ¼ÎÄ¼þ
  */
 public class DBContract {
+	public static final int VERSION = 2;
+	
 	// The same as "android:authorities" in AndroidManifest.xml
 	public static String AUTHORITY = "com.example.wagontester.db";
 	
@@ -163,12 +165,16 @@ public class DBContract {
 		public static final int POS_MODEL = 3;
 		public static final int POS_WAGON = 4;
 		public static final int POS_PLATFORM = 5;
+		public static final int POS_DATE = 6;
+		public static final int POS_STATUS = 7;
 		
 		public static final String KEY_USER = "user_id";
 		public static final String KEY_DUTY = "duty_id";
 		public static final String KEY_MODEL = "model_id";
 		public static final String KEY_WAGON = "wagon_number";
 		public static final String KEY_PLATFORM = "platform_number";
+		public static final String KEY_DATE = "date";
+		public static final String KEY_STATUS = "status";
 		
 		public static final String CMD_CREATE = 
 				"create table " + TABLE_NAME + "(" + 
@@ -177,7 +183,9 @@ public class DBContract {
 				KEY_DUTY + " integer, " +
 				KEY_MODEL + " integer, " +
 				KEY_WAGON + " text, " +
-				KEY_PLATFORM + " text " +
+				KEY_PLATFORM + " text, " +
+				KEY_DATE + " text, " +
+				KEY_STATUS + " integer " +
 				" ) ";
 		public static final String CMD_DROP = "drop table if exists " + TABLE_NAME;
 	}

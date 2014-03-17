@@ -7,13 +7,16 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DBHelper extends SQLiteOpenHelper {
 
 	public static final String DATABASE_NAME = "wagontester.db";
-	public static final int    DATABASE_VERSION = 4;
 	
 	// Singleton
 	static DBHelper mInstance = null;
 	
+	public static int getDatabaseVersion() {
+		return DBContract.VERSION + DBPresetter.VERSION;
+	}
+	
 	public DBHelper(Context context) {
-		super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		super(context, DATABASE_NAME, null, getDatabaseVersion());
 	}
 	
 	public static DBHelper getInstance(Context context) {
