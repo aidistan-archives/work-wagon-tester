@@ -7,7 +7,9 @@ import com.example.wagontester.common.TaskView;
 import com.example.wagontester.db.DBContract;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -43,7 +45,7 @@ public class MainActivity extends Activity {
 	private ListView mListView;
 	
 	// View adapters
-	private ArrayAdapter<String> mSearchAdapter;
+	private ArrayList<String> mArrayList;
 	private ListHelper mListHelper;
 	
 	@Override
@@ -51,28 +53,36 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		mArrayList = new ArrayList<String>();
+		mSpinner = (Spinner)findViewById(R.id.spinner);
+		mTextView = (AutoCompleteTextView)findViewById(R.id.textView);
+		
 		mSortBySpinner = (Spinner)findViewById(R.id.sortBySpinner);
 		mSortBySpinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, SORT_BY_OPTIONS));
-		mSortBySpinner.setOnItemClickListener(new SortBySpinnerListener());
-		
-		mSearchAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, new ArrayList<String>());
-		mSpinner = (Spinner)findViewById(R.id.spinner);
-		mSpinner.setAdapter(mSearchAdapter);
-		mTextView = (AutoCompleteTextView)findViewById(R.id.textView);
-		mTextView.setAdapter(mSearchAdapter);
-		
-//		mSearchTextView.setOnItemClickListener(new OnItemClickListener() {
-//			@Override
-//			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//				mListHelper.requery(mSearchTextAdapter.getItem(position));
-//			}
-//		});
+		mSortBySpinner.setOnItemSelectedListener(new SortBySpinnerListener());
 		
 		mListHelper = new ListHelper(this);
 		mListView = (ListView)findViewById(R.id.listView);
 		mListView.setAdapter(mListHelper);
 		mListView.setItemsCanFocus(false);
 		mListView.setOnItemClickListener(mListHelper);
+		mListView.setOnItemLongClickListener(mListHelper);
+		
+		mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				mListHelper.requery();
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {}
+		});
+		mTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				mListHelper.requery();
+			}
+		});
 	}
 	
 	@Override
@@ -110,28 +120,141 @@ public class MainActivity extends Activity {
 		return true;
 	}
 	
-	private class SortBySpinnerListener implements AdapterView.OnItemClickListener {
+	private class SortBySpinnerListener implements AdapterView.OnItemSelectedListener {
 
 		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		public void onNothingSelected(AdapterView<?> arg0) {
+			mSortBySpinner.setSelection(SORT_BY_ALL);
+		}
+		
+		@Override
+		public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 			// Clear
 			mTextView.setText("");
-			mSearchAdapter.clear();
 			
+			// Data
+			if (position == SORT_BY_ALL) {
+				mListHelper.requery();
+			} else {
+				Cursor cursor = null;
+				ArrayList<Integer> idList = new ArrayList<Integer>();
+				
+				mArrayList.clear();
+				switch (position) {
+					case SORT_BY_USER:
+						// Get user ids
+						cursor = getContentResolver().query(DBContract.TaskTable.CONTENT_URI, 
+								new String[] {DBContract.TaskTable.KEY_USER}, null, null, DBContract.TaskTable.KEY_USER);
+						for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
+						{
+							if (!idList.contains(cursor.getInt(0))) {
+								idList.add(cursor.getInt(0));
+							}
+						}
+						cursor.close();
+						
+						// Get user names
+						for(int i=0; i<idList.size(); i++) {
+							cursor = getContentResolver().query(
+									Uri.withAppendedPath(DBContract.UserTable.CONTENT_URI, String.valueOf(idList.get(i))), 
+									new String[] {DBContract.UserTable.KEY_NAME}, null, null, null);
+							cursor.moveToFirst();
+							mArrayList.add(cursor.getString(0));
+							cursor.close();
+						}
+						break;
+					case SORT_BY_DUTY:
+						// Get duty ids
+						cursor = getContentResolver().query(DBContract.TaskTable.CONTENT_URI, 
+								new String[] {DBContract.TaskTable.KEY_DUTY}, null, null, DBContract.TaskTable.KEY_DUTY);
+						for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
+						{
+							if (!idList.contains(cursor.getInt(0))) {
+								idList.add(cursor.getInt(0));
+							}
+						}
+						cursor.close();
+						
+						// Get duty names
+						for(int i=0; i<idList.size(); i++) {
+							cursor = getContentResolver().query(
+									Uri.withAppendedPath(DBContract.DutyTable.CONTENT_URI, String.valueOf(idList.get(i))), 
+									new String[] {DBContract.DutyTable.KEY_NAME}, null, null, null);
+							cursor.moveToFirst();
+							mArrayList.add(cursor.getString(0));
+							cursor.close();
+						}
+						break;
+					case SORT_BY_MODEL:
+						// Get model ids
+						cursor = getContentResolver().query(DBContract.TaskTable.CONTENT_URI, 
+								new String[] {DBContract.TaskTable.KEY_MODEL}, null, null, DBContract.TaskTable.KEY_MODEL);
+						for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
+						{
+							if (!idList.contains(cursor.getInt(0))) {
+								idList.add(cursor.getInt(0));
+							}
+						}
+						cursor.close();
+						
+						// Get model names
+						for(int i=0; i<idList.size(); i++) {
+							cursor = getContentResolver().query(
+									Uri.withAppendedPath(DBContract.ModelTable.CONTENT_URI, String.valueOf(idList.get(i))), 
+									new String[] {DBContract.ModelTable.KEY_NAME}, null, null, null);
+							cursor.moveToFirst();
+							mArrayList.add(cursor.getString(0));
+							cursor.close();
+						}
+						break;
+					case SORT_BY_WAGON:
+						cursor = getContentResolver().query(DBContract.TaskTable.CONTENT_URI, 
+								new String[] {DBContract.TaskTable.KEY_WAGON}, null, null, DBContract.TaskTable.KEY_WAGON);
+						for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
+						{
+							if (!mArrayList.contains(cursor.getString(0))) {
+								mArrayList.add(cursor.getString(0));
+							}
+						}
+						cursor.close();
+						break;
+					case SORT_BY_PLATFORM:
+						cursor = getContentResolver().query(DBContract.TaskTable.CONTENT_URI, 
+								new String[] {DBContract.TaskTable.KEY_PLATFORM}, null, null, DBContract.TaskTable.KEY_PLATFORM);
+						for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
+						{
+							if (!mArrayList.contains(cursor.getString(0))) {
+								mArrayList.add(cursor.getString(0));
+							}
+						}
+						cursor.close();
+						break;
+					case SORT_BY_DATE:
+						cursor = getContentResolver().query(DBContract.TaskTable.CONTENT_URI, 
+								new String[] {DBContract.TaskTable.KEY_DATE}, null, null, DBContract.TaskTable.KEY_DATE);
+						for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
+						{
+							if (!mArrayList.contains(cursor.getString(0))) {
+								mArrayList.add(cursor.getString(0));
+							}
+						}
+						cursor.close();
+						break;
+				}
+			}
+
 			// Views
 			switch (position) {
 			case SORT_BY_ALL:
-				mTextView.setEnabled(false);
-				mTextView.setVisibility(View.GONE);
-				mSpinner.setEnabled(false);
+				mTextView.setVisibility(View.INVISIBLE);
 				mSpinner.setVisibility(View.GONE);
+				mSortBySpinner.setNextFocusDownId(R.id.listView);
 				return;
 			case SORT_BY_USER:
 			case SORT_BY_DUTY:
-				mTextView.setEnabled(false);
 				mTextView.setVisibility(View.GONE);
-				mSpinner.setEnabled(true);
 				mSpinner.setVisibility(View.VISIBLE);
+				mSpinner.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item, mArrayList));
 				mSpinner.requestFocus();
 				mSortBySpinner.setNextFocusDownId(R.id.spinner);
 				mSpinner.setNextFocusUpId(R.id.sortBySpinner);
@@ -140,61 +263,19 @@ public class MainActivity extends Activity {
 			case SORT_BY_WAGON:
 			case SORT_BY_PLATFORM:
 			case SORT_BY_DATE:
-				mTextView.setEnabled(true);
 				mTextView.setVisibility(View.VISIBLE);
-				mTextView.requestFocus();
-				mSpinner.setEnabled(false);
 				mSpinner.setVisibility(View.GONE);
+				mTextView.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item, mArrayList));
+				mTextView.requestFocus();
 				mSortBySpinner.setNextFocusDownId(R.id.textView);
 				mTextView.setNextFocusUpId(R.id.sortBySpinner);
 				break;
 			}
-			
-			// Data
-			Cursor cursor;
-			switch (position) {
-				case SORT_BY_USER:
-					cursor = getContentResolver().query(DBContract.UserTable.CONTENT_URI, null, null, null, null);
-					break;
-				case SORT_BY_DUTY:
-					cursor = getContentResolver().query(DBContract.DutyTable.CONTENT_URI, null, null, null, null);
-					break;
-				default:
-					throw new IllegalArgumentException();
-					
-			}
-			
-			for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
-			{
-				mSearchAdapter.add(cursor.getString(1));
-			}
-			cursor.close();
-
-//			if (position == DBHelper.TaskTable.SORT_BY_ALL) {} 
-//			else {
-//				// Update SearchTextAdapter
-//				
-//				switch (position) {
-//				case DBHelper.TaskTable.SORT_BY_WAGONNUMBER:
-//					cursor = DBHelper.mDB.query(DBHelper.TaskTable.NAME, null, null, null, DBHelper.TaskTable.GROUP_BY_COLUMNS[position], null, null);
-
-//					break;
-//				default:
-//					cursor = DBHelper.mDB.query(DBHelper.TaskTable.NAME, null, null, null, DBHelper.TaskTable.GROUP_BY_COLUMNS[position], null, null);
-//					for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
-//					{
-//						mSearchTextAdapter.add(cursor.getString(cursor.getColumnIndex(DBHelper.TaskTable.GROUP_BY_COLUMNS[position])));
-//					}
-//				}
-//				cursor.close();
-//				
-//			}
-			mSearchAdapter.notifyDataSetChanged();
 		}
 		
 	}
 	
-	private class ListHelper extends CursorAdapter implements AdapterView.OnItemClickListener {
+	private class ListHelper extends CursorAdapter implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
 		public ListHelper(Context context) {
 			super(context, getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null, null, null, null), false);
@@ -238,60 +319,98 @@ public class MainActivity extends Activity {
 		@Override
 		public View newView(Context context, Cursor cursor, ViewGroup parent) {
 			return new TaskView(context, null);
-
 		}
 		
-//		public void requery() {
-//			requery(mSearchTextView.getText().toString());
-//		}
-//		
-//		public void requery(String query) {
-//			changeCursor(DBHelper.TaskTable.queryTasks(mSortBySpinner.getSelectedItemPosition(), query));
-//		}
+		public void requery() {
+			Cursor c;
+			
+			switch (mSortBySpinner.getSelectedItemPosition()) {
+			case SORT_BY_ALL:
+				changeCursor(getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null, null, null, null));
+				break;
+			case SORT_BY_USER:
+				c = getContentResolver().query(DBContract.UserTable.CONTENT_URI, null, 
+						DBContract.UserTable.KEY_NAME + "=?", new String[] {(String)mSpinner.getSelectedItem()}, null);
+				c.moveToFirst();
+				changeCursor(getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null, 
+						DBContract.TaskTable.KEY_USER + "=" + String.valueOf(c.getInt(0)), null, null));
+				c.close();
+				break;
+			case SORT_BY_DUTY:
+				c = getContentResolver().query(DBContract.DutyTable.CONTENT_URI, null, 
+						DBContract.DutyTable.KEY_NAME + "=?", new String[] {(String)mSpinner.getSelectedItem()}, null);
+				c.moveToFirst();
+				changeCursor(getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null, 
+						DBContract.TaskTable.KEY_DUTY + "=" + String.valueOf(c.getInt(0)), null, null));
+				c.close();
+				break;
+			case SORT_BY_MODEL:
+				c = getContentResolver().query(DBContract.ModelTable.CONTENT_URI, null, 
+						DBContract.ModelTable.KEY_NAME + "=?", new String[] {mTextView.getText().toString()}, null);
+				c.moveToFirst();
+				changeCursor(getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null, 
+						DBContract.TaskTable.KEY_MODEL + "=" + String.valueOf(c.getInt(0)), null, null));
+				c.close();
+				break;
+			case SORT_BY_WAGON:
+				changeCursor(getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null, 
+						DBContract.TaskTable.KEY_WAGON + "=?", new String[] {mTextView.getText().toString()}, null));
+				break;
+			case SORT_BY_PLATFORM:
+				changeCursor(getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null, 
+						DBContract.TaskTable.KEY_PLATFORM + "=?", new String[] {mTextView.getText().toString()}, null));
+				break;
+			case SORT_BY_DATE:
+				changeCursor(getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null, 
+						DBContract.TaskTable.KEY_DATE + "=?", new String[] {mTextView.getText().toString()}, null));
+				break;
+			}
+		}
 
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//			int task_id = Long.valueOf(id).intValue();
-//			mSpAppEditor.putInt("TaskID", task_id);
-//
-//			Cursor cursor = DBHelper.TaskTable.queryTask(task_id);
-//			cursor.moveToFirst();
-//			boolean isFinished = (cursor.getInt(cursor.getColumnIndex(DBHelper.TaskTable.IS_FINISHED)) == 1); 
-//			cursor.close();
-//			if (!isFinished) {
-//				mSpAppEditor.putInt("TaskMode", TaskActivity.MODE_MODIFY);
-//				mSpAppEditor.commit();
-//				TaskListActivity.this.gotoTask();
-//			} else {
-//				AlertDialog.Builder builder = new AlertDialog.Builder(TaskListActivity.this);
-//				builder.setTitle("已经完成任务")
-//				       .setCancelable(true)
-//				       .setPositiveButton("查看", new DialogInterface.OnClickListener() {
-//						
-//							@Override
-//							public void onClick(DialogInterface dialog, int which) {
-//								mSpAppEditor.putInt("TaskMode", TaskActivity.MODE_VIEW);
-//								mSpAppEditor.commit();
-//								TaskListActivity.this.gotoTask();
-//							}
-//						})
-//						.setNeutralButton("修改", new DialogInterface.OnClickListener() {
-//						
-//							@Override
-//							public void onClick(DialogInterface dialog, int which) {
-//								mSpAppEditor.putInt("TaskMode", TaskActivity.MODE_MODIFY);
-//								mSpAppEditor.commit();
-//								TaskListActivity.this.gotoTask();
-//							}
-//						})
-//						.setNegativeButton("返回", new DialogInterface.OnClickListener() {
-//						
-//							@Override
-//							public void onClick(DialogInterface dialog, int which) {
-//							}
-//						})
-//						.show();
-//			}
+			Cursor c = getCursor();
+			c.moveToPosition(position);
+			boolean isFinished = (c.getInt(DBContract.TaskTable.POS_STATUS) == 1); 
+
+			if (!isFinished) {
+				// TODO 初次修改
+			} else {
+				AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+				builder	.setTitle("选择操作：")
+						.setPositiveButton("查看", new DialogInterface.OnClickListener() {
+						
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								// TODO 只读
+							}
+							
+						})
+						.setNeutralButton("修改", new DialogInterface.OnClickListener() {
+						
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								// TODO 二次修改
+							}
+							
+						})
+						.show();
+			}
+		}
+
+		@Override
+		public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+			builder .setTitle("删除任务：")
+				    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+				    	@Override
+				    	public void onClick(DialogInterface dialog, int which) {
+				    		// TODO 删除
+				    	}
+					})
+					.setNegativeButton("取消", null)
+					.show();
+			return true;
 		}
 	}
 }
