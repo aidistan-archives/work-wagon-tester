@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="horizontal"
     android:padding="5dp">
-    <!-- android:background="@drawable/taskview"  TOFIX-->
     
     <FrameLayout
         android:layout_width="wrap_content"

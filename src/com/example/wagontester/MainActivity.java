@@ -24,26 +24,26 @@ import android.widget.AutoCompleteTextView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.AdapterView.OnItemClickListener;
 
 public class MainActivity extends Activity {
 	
 	private static final String[] SORT_BY_OPTIONS = {"全部", "按作业者", "按车型", "按车号", "按台位", "按日期", "按岗位"};
 	private static final int SORT_BY_ALL = 0;
 	private static final int SORT_BY_USER = 1;
+	private static final int SORT_BY_DUTY = 6;
 	private static final int SORT_BY_MODEL = 2;
 	private static final int SORT_BY_WAGON = 3;
 	private static final int SORT_BY_PLATFORM = 4;
 	private static final int SORT_BY_DATE = 5;
-	private static final int SORT_BY_DUTY = 6;
+
 	
 	// Views
-	private Spinner mSortBySpinner;
-	private AutoCompleteTextView mSearchTextView;
+	private Spinner mSortBySpinner, mSpinner;
+	private AutoCompleteTextView mTextView;
 	private ListView mListView;
 	
 	// View adapters
-	private ArrayAdapter<String> mSearchTextAdapter;
+	private ArrayAdapter<String> mSearchAdapter;
 	private ListHelper mListHelper;
 	
 	@Override
@@ -51,69 +51,22 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		mSortBySpinner = (Spinner)findViewById(R.id.spinner);
+		mSortBySpinner = (Spinner)findViewById(R.id.sortBySpinner);
 		mSortBySpinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, SORT_BY_OPTIONS));
-		mSortBySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
-
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				switch (position) {
-				case SORT_BY_ALL:
-					mSearchTextView.setText("");
-					mSearchTextView.setEnabled(false);
-					break;
-				default:
-					mSearchTextView.setText("");
-					mSearchTextView.setEnabled(true);
-					mSearchTextView.requestFocus();
-					mSortBySpinner.setNextFocusDownId(R.id.autoCompleteTextView);
-					mSearchTextView.setNextFocusUpId(R.id.spinner);
-					break;
-				}
-				
-//				if (position == DBHelper.TaskTable.SORT_BY_ALL) {} 
-//				else {
-//					// Update SearchTextAdapter
-//					Cursor cursor;
-//					mSearchTextAdapter.clear();
-//					switch (position) {
-//					case DBHelper.TaskTable.SORT_BY_WAGONNUMBER:
-//						cursor = DBHelper.mDB.query(DBHelper.TaskTable.NAME, null, null, null, DBHelper.TaskTable.GROUP_BY_COLUMNS[position], null, null);
-//						for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
-//						{
-//							mSearchTextAdapter.add(DBHelper.WagonTable.queryName(
-//									cursor.getInt(cursor.getColumnIndex(DBHelper.TaskTable.WAGON_ID))
-//									));
-//						}
-//						break;
-//					default:
-//						cursor = DBHelper.mDB.query(DBHelper.TaskTable.NAME, null, null, null, DBHelper.TaskTable.GROUP_BY_COLUMNS[position], null, null);
-//						for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
-//						{
-//							mSearchTextAdapter.add(cursor.getString(cursor.getColumnIndex(DBHelper.TaskTable.GROUP_BY_COLUMNS[position])));
-//						}
-//					}
-//					cursor.close();
-//					mSearchTextAdapter.notifyDataSetChanged();
-//				}
-//				mListHelper.requery();
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-				mSortBySpinner.setSelection(SORT_BY_ALL);
-			}
-		});
+		mSortBySpinner.setOnItemClickListener(new SortBySpinnerListener());
 		
-		mSearchTextAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, new ArrayList<String>());
-		mSearchTextView = (AutoCompleteTextView)findViewById(R.id.autoCompleteTextView);
-		mSearchTextView.setAdapter(mSearchTextAdapter);
-		mSearchTextView.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		mSearchAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, new ArrayList<String>());
+		mSpinner = (Spinner)findViewById(R.id.spinner);
+		mSpinner.setAdapter(mSearchAdapter);
+		mTextView = (AutoCompleteTextView)findViewById(R.id.textView);
+		mTextView.setAdapter(mSearchAdapter);
+		
+//		mSearchTextView.setOnItemClickListener(new OnItemClickListener() {
+//			@Override
+//			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 //				mListHelper.requery(mSearchTextAdapter.getItem(position));
-			}
-		});
+//			}
+//		});
 		
 		mListHelper = new ListHelper(this);
 		mListView = (ListView)findViewById(R.id.listView);
@@ -157,7 +110,91 @@ public class MainActivity extends Activity {
 		return true;
 	}
 	
-	private class ListHelper extends CursorAdapter implements AdapterView.OnItemClickListener{
+	private class SortBySpinnerListener implements AdapterView.OnItemClickListener {
+
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			// Clear
+			mTextView.setText("");
+			mSearchAdapter.clear();
+			
+			// Views
+			switch (position) {
+			case SORT_BY_ALL:
+				mTextView.setEnabled(false);
+				mTextView.setVisibility(View.GONE);
+				mSpinner.setEnabled(false);
+				mSpinner.setVisibility(View.GONE);
+				return;
+			case SORT_BY_USER:
+			case SORT_BY_DUTY:
+				mTextView.setEnabled(false);
+				mTextView.setVisibility(View.GONE);
+				mSpinner.setEnabled(true);
+				mSpinner.setVisibility(View.VISIBLE);
+				mSpinner.requestFocus();
+				mSortBySpinner.setNextFocusDownId(R.id.spinner);
+				mSpinner.setNextFocusUpId(R.id.sortBySpinner);
+				break;
+			case SORT_BY_MODEL:
+			case SORT_BY_WAGON:
+			case SORT_BY_PLATFORM:
+			case SORT_BY_DATE:
+				mTextView.setEnabled(true);
+				mTextView.setVisibility(View.VISIBLE);
+				mTextView.requestFocus();
+				mSpinner.setEnabled(false);
+				mSpinner.setVisibility(View.GONE);
+				mSortBySpinner.setNextFocusDownId(R.id.textView);
+				mTextView.setNextFocusUpId(R.id.sortBySpinner);
+				break;
+			}
+			
+			// Data
+			Cursor cursor;
+			switch (position) {
+				case SORT_BY_USER:
+					cursor = getContentResolver().query(DBContract.UserTable.CONTENT_URI, null, null, null, null);
+					break;
+				case SORT_BY_DUTY:
+					cursor = getContentResolver().query(DBContract.DutyTable.CONTENT_URI, null, null, null, null);
+					break;
+				default:
+					throw new IllegalArgumentException();
+					
+			}
+			
+			for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
+			{
+				mSearchAdapter.add(cursor.getString(1));
+			}
+			cursor.close();
+
+//			if (position == DBHelper.TaskTable.SORT_BY_ALL) {} 
+//			else {
+//				// Update SearchTextAdapter
+//				
+//				switch (position) {
+//				case DBHelper.TaskTable.SORT_BY_WAGONNUMBER:
+//					cursor = DBHelper.mDB.query(DBHelper.TaskTable.NAME, null, null, null, DBHelper.TaskTable.GROUP_BY_COLUMNS[position], null, null);
+
+//					break;
+//				default:
+//					cursor = DBHelper.mDB.query(DBHelper.TaskTable.NAME, null, null, null, DBHelper.TaskTable.GROUP_BY_COLUMNS[position], null, null);
+//					for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
+//					{
+//						mSearchTextAdapter.add(cursor.getString(cursor.getColumnIndex(DBHelper.TaskTable.GROUP_BY_COLUMNS[position])));
+//					}
+//				}
+//				cursor.close();
+//				
+//			}
+			mSearchAdapter.notifyDataSetChanged();
+		}
+		
+	}
+	
+	private class ListHelper extends CursorAdapter implements AdapterView.OnItemClickListener {
 
 		public ListHelper(Context context) {
 			super(context, getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null, null, null, null), false);

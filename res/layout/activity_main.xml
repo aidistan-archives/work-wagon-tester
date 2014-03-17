@@ -19,17 +19,24 @@
         	android:orientation="horizontal">
         	
 	        <Spinner
-	            android:id="@+id/spinner"
+	            android:id="@+id/sortBySpinner"
 	            android:layout_width="match_parent"
 	            android:layout_height="wrap_content"
-	            android:layout_weight="2"
+	            android:layout_weight="3"
 	            android:focusableInTouchMode="true"/>
 	        
-		    <AutoCompleteTextView
-		        android:id="@+id/autoCompleteTextView"
+	        <Spinner
+	            android:id="@+id/spinner"
 		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
-		        android:layout_weight="1"
+		        android:layout_weight="2"
+		        android:visibility="gone"/>
+		        
+		    <AutoCompleteTextView
+		        android:id="@+id/textView"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="2"
 		        
 		        android:ems="10"
 		        android:singleLine="true"
@@ -44,7 +51,8 @@
 	        android:id="@+id/listView"
 	        android:layout_width="match_parent"
 	        android:layout_height="0dp"
-	        android:layout_weight="1" />
+	        android:layout_weight="1" 
+	        android:listSelector="@drawable/select_tasklist"/>
     </LinearLayout>
 
 </FrameLayout>
