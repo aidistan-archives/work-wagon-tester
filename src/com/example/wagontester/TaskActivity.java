@@ -276,8 +276,8 @@ public class TaskActivity extends Activity {
 					editText.setText(mArrayList.get(position));
 				}
 				
-				AlertDialog.Builder builder = new AlertDialog.Builder(TaskActivity.this);
-				builder .setTitle("部件名称")
+				new AlertDialog.Builder(TaskActivity.this)
+						.setTitle("部件名称")
 						.setView(editText)
 						.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 							
@@ -307,8 +307,8 @@ public class TaskActivity extends Activity {
 				return false;
 			}
 			
-			AlertDialog.Builder builder = new AlertDialog.Builder(TaskActivity.this);
-			builder .setTitle("删除部件")
+			new AlertDialog.Builder(TaskActivity.this)
+					.setTitle("删除部件")
 				    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
 				    	@Override
 				    	public void onClick(DialogInterface dialog, int which) {

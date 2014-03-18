@@ -367,8 +367,8 @@ public class MainActivity extends Activity {
 
 		@Override
 		public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-			builder .setTitle("删除任务：")
+			new AlertDialog.Builder(MainActivity.this)
+					.setTitle("删除任务：")
 				    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
 				    	@Override
 				    	public void onClick(DialogInterface dialog, int which) {

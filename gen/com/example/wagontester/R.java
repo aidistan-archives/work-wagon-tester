@@ -41,41 +41,49 @@ public final class R {
         public static final int ic_check=0x7f020001;
         public static final int ic_frame=0x7f020002;
         public static final int ic_launcher=0x7f020003;
-        public static final int missingphoto=0x7f020004;
-        public static final int select_partlist=0x7f020005;
-        public static final int select_tasklist=0x7f020006;
+        public static final int selector_partlist=0x7f020004;
+        public static final int selector_photo=0x7f020005;
+        public static final int selector_tasklist=0x7f020006;
+        public static final int shape_dummyphoto=0x7f020007;
+        public static final int shape_missingphoto=0x7f020008;
     }
     public static final class id {
-        public static final int add=0x7f090017;
-        public static final int auto=0x7f09001c;
+        public static final int add=0x7f09001b;
+        public static final int auto=0x7f090023;
         public static final int button=0x7f090002;
-        public static final int change=0x7f090019;
-        public static final int check=0x7f09001a;
-        public static final int dateText=0x7f090013;
-        public static final int dateView=0x7f090016;
+        public static final int change=0x7f09001d;
+        public static final int check=0x7f090021;
+        public static final int clear=0x7f090020;
+        public static final int dateText=0x7f090016;
+        public static final int dateView=0x7f09001a;
+        public static final int dummyPhoto=0x7f09000a;
         public static final int dutySpinner=0x7f090001;
-        public static final int dutyText=0x7f09000c;
-        public static final int dutyView=0x7f090015;
-        public static final int imageView=0x7f090007;
+        public static final int dutyText=0x7f09000f;
+        public static final int dutyView=0x7f090019;
+        public static final int imageView=0x7f090017;
+        public static final int linearLayout=0x7f090007;
         public static final int listView=0x7f090006;
-        public static final int modelEdit=0x7f09000e;
-        public static final int modelText=0x7f09000d;
-        public static final int modelView=0x7f09000f;
-        public static final int platformEdit=0x7f090011;
-        public static final int platformText=0x7f090010;
-        public static final int platformView=0x7f090012;
-        public static final int save=0x7f09001d;
+        public static final int modelEdit=0x7f090011;
+        public static final int modelText=0x7f090010;
+        public static final int modelView=0x7f090012;
+        public static final int photo=0x7f090009;
+        public static final int platformEdit=0x7f090014;
+        public static final int platformText=0x7f090013;
+        public static final int platformView=0x7f090015;
+        public static final int reset=0x7f09001f;
+        public static final int save=0x7f09001e;
         public static final int sortBySpinner=0x7f090003;
         public static final int spinner=0x7f090004;
         public static final int textView=0x7f090005;
-        public static final int uncheck=0x7f09001b;
-        public static final int upload=0x7f090018;
+        public static final int toggleButton=0x7f090008;
+        public static final int uncheck=0x7f090022;
+        public static final int upload=0x7f09001c;
         public static final int userSpinner=0x7f090000;
-        public static final int userText=0x7f09000b;
-        public static final int userView=0x7f090014;
-        public static final int wagonEdit=0x7f09000a;
-        public static final int wagonText=0x7f090009;
-        public static final int wagonView=0x7f090008;
+        public static final int userText=0x7f09000e;
+        public static final int userView=0x7f090018;
+        public static final int wagonEdit=0x7f09000d;
+        public static final int wagonText=0x7f09000c;
+        public static final int wagonView=0x7f09000b;
     }
     public static final class layout {
         public static final int activity_login=0x7f030000;
@@ -88,8 +96,9 @@ public final class R {
     }
     public static final class menu {
         public static final int activity_main=0x7f080000;
-        public static final int activity_task_modify=0x7f080001;
-        public static final int activity_task_new=0x7f080002;
+        public static final int activity_part=0x7f080001;
+        public static final int activity_task_modify=0x7f080002;
+        public static final int activity_task_new=0x7f080003;
     }
     public static final class string {
         public static final int app_fullname=0x7f060001;

@@ -1,15 +1,46 @@
 package com.example.wagontester;
 
+import java.util.ArrayList;
+
+import com.example.wagontester.db.DBContract;
+
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.ToggleButton;
 
 public class PartActivity extends Activity {
 	
 	public static final String EXTRA_TASK = "com.example.wagontester.task_activity.task_id";
 	public static final String EXTRA_PART = "com.example.wagontester.task_activity.part_name";
 	
+	// Views
+	private TextView mTextView;
+	private ImageView mPhotoView, mDummyView;
+	private ToggleButton mToggleButton;
+	private Spinner mSpinner;
+
+	// Data
 	private int mTaskID;
 	private String mPartName;
+	private String mFault = "";
+	private String mImagePath = "";
+	private ArrayList<String> mArrayList = new ArrayList<String>();
+	private SpinnerHelper mSpinnerHelper;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -18,139 +49,208 @@ public class PartActivity extends Activity {
 		
 		mTaskID = getIntent().getExtras().getInt(EXTRA_TASK);
 		mPartName = getIntent().getExtras().getString(EXTRA_PART);
+		
+		mTextView = (TextView)findViewById(R.id.textView);
+		mPhotoView = (ImageView)findViewById(R.id.photo);
+		mDummyView = (ImageView)findViewById(R.id.dummyPhoto);
+		mToggleButton = (ToggleButton)findViewById(R.id.toggleButton);
+		mSpinner = (Spinner)findViewById(R.id.spinner);
+		
+		// Load preseted faults for this part
+		Cursor c = getContentResolver().query(DBContract.FaultTable.CONTENT_URI, null, 
+				DBContract.FaultTable.KEY_PART + "=?", new String[] {mPartName}, null);
+		for(c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+			mArrayList.add(c.getString(DBContract.FaultTable.POS_NAME));
+		}
+		c.close();
+		
+		// Set views
+		mDummyView.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				// TODO 打开PhotoActivity
+			}
+		});
+		
+		mToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if(isChecked) {
+					mFault = "";
+					mSpinner.setSelection(0);
+					mSpinner.setEnabled(false);
+					mSpinner.setFocusable(false);
+					mSpinner.setFocusableInTouchMode(false);
+				} else {
+					mSpinner.setEnabled(true);
+					mSpinner.setSelection(0);
+					mSpinner.setFocusable(true);
+					mSpinner.setFocusableInTouchMode(true);
+				}
+			}
+		});
+		
+		mSpinnerHelper = new SpinnerHelper();
+		mSpinner.setAdapter(mSpinnerHelper);
+		mSpinner.setOnItemSelectedListener(mSpinnerHelper);
+		
+		// Update views
+		mTextView.setText(mPartName);
+		reset();
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		new MenuInflater(this).inflate(R.menu.activity_part, menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item){
+		switch (item.getItemId()) {
+		case R.id.save:
+			this.finish();
+			break;
+		case R.id.reset:
+			reset();
+			break;
+		case R.id.clear:
+			break;
+		}
+		return true;
+	}
+	
+	private void reset() {
+		Cursor c = getContentResolver().query(DBContract.ContentTable.CONTENT_URI, null, 
+				DBContract.ContentTable.KEY_TASK + "=" + String.valueOf(mTaskID) + " AND " + DBContract.ContentTable.KEY_PART + "=?", 
+				new String[] {mPartName}, null);
+		c.moveToFirst();
+		mFault = c.getString(DBContract.ContentTable.POS_FAULT);
+		mImagePath = c.getString(DBContract.ContentTable.POS_IMAGE);
+		c.close();
+		
+		// Fault
+		if (mFault.equals("")) {
+			mToggleButton.setChecked(true);
+		} else {
+			String backup = new String(mFault);
+			mToggleButton.setChecked(false);
+			mSpinnerHelper.setFaultByString(backup);
+		}
+		
+		// Image
+		loadImage();
+	}
+	
+	private void loadImage() {
+		loadImage(mImagePath);
+	}
+	
+	private void loadImage(String path) {
+		mImagePath = path;
+		// TODO: Load Image
+//		mPhotoView
+	}
+	
+	private class SpinnerHelper extends BaseAdapter implements AdapterView.OnItemSelectedListener {
+
+		private boolean isCustom() {
+			return !mFault.equals("") && !mArrayList.contains(mFault);
+		}
+		
+		public void setFaultByString(String str) {
+			mFault = str;
+			if (mFault.equals("")) {
+				mSpinner.setSelection(0);
+			} else if (mArrayList.contains(mFault)) {
+				mSpinner.setSelection(mArrayList.indexOf(mFault));
+			} else {
+				mSpinner.setSelection(getCount()-2);
+			}
+			mSpinnerHelper.notifyDataSetChanged();
+		}
+		
+		@Override
+		public int getCount() {
+			int count = 2 + mArrayList.size();
+			if (isCustom()) {
+				count += 1;
+			}
+			return count;
+		}
+
+		@Override
+		/**
+		 * Please use mFault instead.
+		 */
+		public Object getItem(int position) { return null; }
+		
+		@Override
+		public long getItemId(int position) { return 0; }
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			TextView view;
+			if (convertView == null) {
+				view = new TextView(PartActivity.this);
+			} else {
+				view = (TextView)convertView;
+			}
+			view.setTextSize(16);
+			view.setTextColor(getResources().getColor(R.color.metro_black));
+			
+			if (position == 0) {
+				view.setText("请选择");
+			} else if (isCustom() && position == getCount()-2) {
+				view.setText(mFault);
+			} else if (position == getCount()-1) {
+				view.setText("自定义");
+			} else {
+				view.setText(mArrayList.get(position-1));
+			}
+			return view;
+		}
+
+		@Override
+		public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+			// 自定义
+			
+			if (position == 0) {
+				mFault = "";
+			} else if (isCustom() && position == getCount()-2) {
+				// Not change
+			} else if (position == getCount()-1) {
+				final EditText editText = new EditText(PartActivity.this);
+				if (isCustom()) {
+					editText.setText(mFault);
+				}
+				new AlertDialog.Builder(PartActivity.this)
+						.setTitle("自定义")
+						.setView(editText)
+						.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								setFaultByString(editText.getText().toString());
+							}
+						})
+						.setOnCancelListener(new DialogInterface.OnCancelListener() {
+							@Override
+							public void onCancel(DialogInterface dialog) {
+								mSpinner.setSelection(0);
+							}
+						})
+						.show();
+			} else {
+				mFault = mArrayList.get(position-1);
+			}
+		}
+
+		@Override
+		public void onNothingSelected(AdapterView<?> parent) {
+			mSpinner.setSelection(0);
+		}
+		
 	}
 }
-//	
-//	private SharedPreferences mSpApp;
-//	
-//	private Spinner mSpinner;
-//	private EditText mEditText;
-//	private ImageView mImageView;
-//	
-//	private TestTaskPart mPart;
-//	private Bitmap mBitmap = null;
-//	
-//	@Override
-//	public void onCreate(Bundle savedInstanceState) {
-
-//		
-//		mSpinner = (Spinner)findViewById(R.id.spinner);
-//		mEditText = (EditText)findViewById(R.id.editText);
-//		mImageView = (ImageView)findViewById(R.id.imageView);
-//		
-//		mSpApp = getSharedPreferences("app", MODE_PRIVATE);
-//		mPart = new TestTaskPart();
-//		mPart._id = mSpApp.getInt("Part_ID", 0);
-//		mPart.part_name = mSpApp.getString("Part_Name", "");
-//		mPart.state = mSpApp.getString("Part_State", "0"); 
-//		mPart.state2 = mSpApp.getString("Part_State2", "");
-//		mPart.image_path = mSpApp.getString("Part_ImagePath", "");
-//		
-//		mSpinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, TestTaskPart.STATES));
-//		mSpinner.setSelection(Integer.parseInt(mPart.state));
-//		mEditText.setText(mPart.state2);
-//		
-//		switch (mSpApp.getInt("TaskMode", TaskActivity.MODE_MODIFY)) {
-//		case TaskActivity.MODE_MODIFY:
-//			mImageView.setClickable(true);
-//			mImageView.setFocusable(true);
-//			mImageView.setFocusableInTouchMode(true);			
-//			mImageView.setOnClickListener(new OnClickListener() {
-//				
-//				@Override
-//				public void onClick(View arg0) {
-//					Intent intent = new Intent(PartActivity.this, TaskPhotoActivity.class);
-//					startActivityForResult(intent, 0);
-//				}
-//			});
-//			showImage();
-//			break;
-//		case TaskActivity.MODE_VIEW:
-//			mSpinner.setEnabled(false);
-//			mEditText.setEnabled(false);
-//			showImage();
-//			break;
-//		}
-//		
-//		mSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-//
-//			@Override
-//			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//				mPart.state = String.valueOf(position);
-//				if (position == TestTaskPart.STATES.length - 1) {
-//					mEditText.setText("");
-//					mEditText.setEnabled(true);
-//					mEditText.setFocusable(true);
-//					mEditText.setFocusableInTouchMode(true);					
-//				} else {
-//					mEditText.setText("");
-//					mEditText.setEnabled(false);
-//					mEditText.setFocusable(false);
-//					mEditText.setFocusableInTouchMode(false);
-//				}				
-//			}
-//
-//			@Override
-//			public void onNothingSelected(AdapterView<?> parent) {}
-//		});
-//		
-//		mEditText.addTextChangedListener(new TextWatcher() {
-//				
-//			@Override
-//			public void onTextChanged(CharSequence s, int start, int before, int count) { }
-//			@Override
-//			public void beforeTextChanged(CharSequence s, int start, int count,	int after) {}
-//			
-//			@Override
-//			public void afterTextChanged(Editable s) {
-//				mPart.state2 = s.toString();
-//			}
-//		});
-//
-//	}
-//	
-//	@Override
-//	protected void onDestroy () {
-//		super.onDestroy();
-//		if(!(mBitmap==null) && !mBitmap.isRecycled()) {
-//			mBitmap.recycle();
-//		}
-//	}
-//	
-//	@Override
-//	protected void onActivityResult (int requestCode, int resultCode, Intent data) {
-//		if (resultCode == RESULT_OK) {
-//			mPart.image_path = data.getStringExtra(TaskPhotoActivity.INTENT_FIELD);
-//			showImage();
-//		}
-//	}
-//	
-//	@Override
-//	public boolean onKeyDown(int keyCode, KeyEvent event) {
-//		if(keyCode == KeyEvent.KEYCODE_BACK) {
-//			if(mSpApp.getInt("TaskMode", TaskActivity.MODE_MODIFY) == TaskActivity.MODE_VIEW) {
-//				setResult(RESULT_CANCELED);
-//			} else {
-//				SharedPreferences.Editor editor = mSpApp.edit();
-//				editor.putInt("Part_ID", mPart._id);
-//				editor.putString("Part_Name", mPart.part_name);
-//				editor.putString("Part_State", mPart.state); 
-//				editor.putString("Part_State2", mPart.state2);
-//				editor.putString("Part_ImagePath", mPart.image_path);
-//				editor.commit();
-//				
-//				setResult(RESULT_OK);
-//			}
-//			finish();
-//			return true;
-//		} else {
-//			return super.onKeyDown(keyCode, event);
-//		}
-//	}
-//	
-//	private void showImage() {
-//		if(mPart.image_path.equals("")) { return; }
-//		mBitmap = BitmapFactory.decodeFile(mPart.image_path);
-//		mImageView.setImageBitmap(mBitmap);
-//	}
-//}
