@@ -122,7 +122,19 @@ public class TaskActivity extends Activity {
 			mModelEdit.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, modelList));
 			c.close();
         } else {
+        	c = getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null, "_id=" + String.valueOf(mTaskID), null, null);
+        	c.moveToFirst();
+        	mWagonText.setText(c.getString(DBContract.TaskTable.POS_WAGON));
+        	mModelText.setText(c.getString(DBContract.TaskTable.POS_MODEL));
+        	mPlatformText.setText(c.getString(DBContract.TaskTable.POS_PLATFORM));
+        	mDateText.setText(c.getString(DBContract.TaskTable.POS_DATE));
+        	c.close();
         	
+        	c = getContentResolver().query(DBContract.ContentTable.CONTENT_URI, null, 
+        			DBContract.ContentTable.KEY_TASK + "=" + String.valueOf(mTaskID), null, null);
+        	for(c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+        		mArrayList.add(c.getString(DBContract.ContentTable.POS_PART));
+        	}
         }
         mListHelper = new ListHelper();
         mListView.setAdapter(mListHelper);
@@ -236,7 +248,7 @@ public class TaskActivity extends Activity {
 				view.setText(mArrayList.get(position));
 				view.setTextColor(getResources().getColor(R.color.metro_white));
 			}
-			view.setTextSize(16);
+			view.setTextSize(20);
 			
 			return view;
 		}
@@ -267,6 +279,7 @@ public class TaskActivity extends Activity {
 						})
 						.show();
 			} else {
+				// TODO
 //				mArrayList.get(position)
 //				mTaskID
 			}
@@ -274,7 +287,7 @@ public class TaskActivity extends Activity {
 		
 		@Override
 		public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-			if (position == mArrayList.size()) {
+			if (!isModeNew || position == mArrayList.size()) {
 				return false;
 			}
 			
