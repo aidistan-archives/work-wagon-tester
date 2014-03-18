@@ -24,7 +24,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
+// TODO: Show the progress better
 public class PhotoActivity extends Activity implements SurfaceHolder.Callback, PictureCallback{
 	
 	public static final String EXTRA = "com.example.wagontester.photo_activity.image_path";
@@ -55,6 +55,16 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
 		
 		setIfBusy(false);
 	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		
+		if (mBitmap != null) {
+			mBitmap.recycle();
+		}
+	}
+
 		
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -79,6 +89,7 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
 				mPostView.setVisibility(View.GONE);
 				mPostView.setImageDrawable(null);
 				mBitmap.recycle();
+				mBitmap = null;
 				
 				isOnPostview = false;
             	mCamera.startPreview();
@@ -142,6 +153,7 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
 		mCamera = Camera.open();
+
 		try {
 			mCamera.setPreviewDisplay(holder);
 		} catch (IOException e) {
@@ -188,10 +200,6 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
 		public void onPostExecute(String filename) {
 			setIfBusy(false);
 			if(filename != null) {
-				mPostView.setVisibility(View.GONE);
-				mPostView.setImageDrawable(null);
-				mBitmap.recycle();
-				
 				setResult(RESULT_OK, new Intent().putExtra(EXTRA , filename));
 				finish();
 			}

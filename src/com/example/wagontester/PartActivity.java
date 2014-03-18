@@ -1,14 +1,18 @@
 package com.example.wagontester;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import com.example.wagontester.db.DBContract;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +26,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 public class PartActivity extends Activity {
@@ -40,6 +45,7 @@ public class PartActivity extends Activity {
 	private String mPartName;
 	private String mFault = "";
 	private String mImagePath = "";
+	private Bitmap mBitmap = null;
 	private ArrayList<String> mArrayList = new ArrayList<String>();
 	private SpinnerHelper mSpinnerHelper;
 	
@@ -98,7 +104,33 @@ public class PartActivity extends Activity {
 		
 		// Update views
 		mTextView.setText(mPartName);
-		reset();
+		resetViews();
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		
+		// Reload
+		loadImage();
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		
+		// Release
+		mPhotoView.setImageDrawable(null);
+		if (mBitmap != null) {
+			mBitmap.recycle();
+			mBitmap = null;
+		}
+	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		//TODO …æ≥˝∂‡”‡’’∆¨
 	}
 	
 	@Override
@@ -111,12 +143,26 @@ public class PartActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item){
 		switch (item.getItemId()) {
 		case R.id.save:
+			if (!mToggleButton.isChecked() && mFault.equals("")) {
+				Toast.makeText(this, "«Î—°‘Ò", Toast.LENGTH_SHORT).show();
+				return true;
+			}
+			
+			ContentValues cv = new ContentValues();
+			cv.put(DBContract.ContentTable.KEY_IMAGE, mImagePath);
+			cv.put(DBContract.ContentTable.KEY_FAULT, mFault);
+			getContentResolver().update(DBContract.ContentTable.CONTENT_URI, cv, 
+					DBContract.ContentTable.KEY_TASK + "=" + String.valueOf(mTaskID) + " AND " + DBContract.ContentTable.KEY_PART + "=?", 
+					new String[] {mPartName});
 			this.finish();
 			break;
 		case R.id.reset:
-			reset();
+			resetViews();
 			break;
 		case R.id.clear:
+			mFault = "";
+			mImagePath = "";
+			setViews();
 			break;
 		}
 		return true;
@@ -124,12 +170,15 @@ public class PartActivity extends Activity {
 	
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == RESULT_OK) {
-			// TODO
+		super.onActivityResult(requestCode, resultCode, data);
+		
+		if (resultCode == RESULT_OK) {
+			mImagePath = data.getExtras().getString(PhotoActivity.EXTRA);
+			// onResume will show the picture
 		}
 	}
 	
-	private void reset() {
+	private void resetViews() {
 		Cursor c = getContentResolver().query(DBContract.ContentTable.CONTENT_URI, null, 
 				DBContract.ContentTable.KEY_TASK + "=" + String.valueOf(mTaskID) + " AND " + DBContract.ContentTable.KEY_PART + "=?", 
 				new String[] {mPartName}, null);
@@ -138,6 +187,10 @@ public class PartActivity extends Activity {
 		mImagePath = c.getString(DBContract.ContentTable.POS_IMAGE);
 		c.close();
 		
+		setViews();
+	}
+	
+	private void setViews() {
 		// Fault
 		if (mFault.equals("")) {
 			mToggleButton.setChecked(true);
@@ -157,8 +210,22 @@ public class PartActivity extends Activity {
 	
 	private void loadImage(String path) {
 		mImagePath = path;
-		// TODO: Load Image
-//		mPhotoView
+		
+		// Release
+		mPhotoView.setImageDrawable(null);
+		if (mBitmap != null) {
+			mBitmap.recycle();
+			mBitmap = null;
+		}
+		
+		// Check
+		if (mImagePath.equals("")) {
+			return;
+		}
+		
+		File imgFile = new File(mImagePath);
+		mBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+	    mPhotoView.setImageBitmap(mBitmap);
 	}
 	
 	private class SpinnerHelper extends BaseAdapter implements AdapterView.OnItemSelectedListener {
