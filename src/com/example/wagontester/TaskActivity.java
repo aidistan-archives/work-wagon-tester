@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -279,9 +280,10 @@ public class TaskActivity extends Activity {
 						})
 						.show();
 			} else {
-				// TODO
-//				mArrayList.get(position)
-//				mTaskID
+				Intent intent = new Intent(TaskActivity.this, PartActivity.class);
+				intent.putExtra(PartActivity.EXTRA_TASK, mTaskID);
+				intent.putExtra(PartActivity.EXTRA_PART, mArrayList.get(position));
+				startActivity(intent);
 			}
 		}
 		

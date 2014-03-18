@@ -7,7 +7,7 @@ import android.provider.BaseColumns;
  * ÆõÔ¼ÎÄ¼þ
  */
 public class DBContract {
-	public static final int VERSION = 6;
+	public static final int VERSION = 7;
 	
 	// The same as "android:authorities" in AndroidManifest.xml
 	public static String AUTHORITY = "com.example.wagontester.db";

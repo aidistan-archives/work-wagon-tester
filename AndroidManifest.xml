@@ -49,7 +49,12 @@
         
     	<activity android:name="TaskActivity" >
         </activity>
-
+        
+    	<activity android:name="PartActivity" >
+        </activity>
+        
+        <activity android:name="PhotoActivity" >
+        </activity>
     </application>
 
 </manifest>

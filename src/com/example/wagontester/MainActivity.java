@@ -38,7 +38,6 @@ public class MainActivity extends Activity {
 	private static final int SORT_BY_PLATFORM = 4;
 	private static final int SORT_BY_DATE = 5;
 
-	
 	// Views
 	private Spinner mSortBySpinner, mSpinner;
 	private AutoCompleteTextView mTextView;
@@ -166,7 +165,7 @@ public class MainActivity extends Activity {
 						// Get user names
 						for(Integer user_id : idList) {
 							cursor = getContentResolver().query(
-									Uri.withAppendedPath(DBContract.UserTable.CONTENT_URI, String.valueOf(idList.get(user_id))), 
+									Uri.withAppendedPath(DBContract.UserTable.CONTENT_URI, String.valueOf(user_id)), 
 									new String[] {DBContract.UserTable.KEY_NAME}, null, null, null);
 							cursor.moveToFirst();
 							mArrayList.add(cursor.getString(0));
@@ -188,7 +187,7 @@ public class MainActivity extends Activity {
 						// Get duty names
 						for(Integer duty_id : idList) {
 							cursor = getContentResolver().query(
-									Uri.withAppendedPath(DBContract.DutyTable.CONTENT_URI, String.valueOf(idList.get(duty_id))), 
+									Uri.withAppendedPath(DBContract.DutyTable.CONTENT_URI, String.valueOf(duty_id)), 
 									new String[] {DBContract.DutyTable.KEY_NAME}, null, null, null);
 							cursor.moveToFirst();
 							mArrayList.add(cursor.getString(0));
