@@ -22,8 +22,6 @@ public class LoginActivity extends Activity {
 	
 	// SharedPreferences
 	private SharedPreferences mSpApp;
-	private Cursor mUserCursor;
-	private Cursor mDutyCursor;
 	
 	// Views
 	private Spinner mUserSpinner;
@@ -34,13 +32,16 @@ public class LoginActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 		
-		mUserCursor = getContentResolver().query(DBContract.UserTable.CONTENT_URI, null, null, null, null);
-		mUserSpinner = (Spinner)findViewById(R.id.userSpinner);
-		mUserSpinner.setAdapter(new SpinnerAdapter(this, mUserCursor, DBContract.UserTable.POS_NAME));
-		mDutyCursor = getContentResolver().query(DBContract.DutyTable.CONTENT_URI, null, null, null, null);
-		mDutySpinner = (Spinner)findViewById(R.id.dutySpinner);
-		mDutySpinner.setAdapter(new SpinnerAdapter(this, mDutyCursor, DBContract.DutyTable.POS_NAME));
 		mSpApp = getSharedPreferences("app", MODE_PRIVATE);
+		 
+		mUserSpinner = (Spinner)findViewById(R.id.userSpinner);
+		mUserSpinner.setAdapter(new SpinnerAdapter(this,
+				getContentResolver().query(DBContract.UserTable.CONTENT_URI, null, null, null, null), 
+				DBContract.UserTable.POS_NAME));
+		mDutySpinner = (Spinner)findViewById(R.id.dutySpinner);
+		mDutySpinner.setAdapter(new SpinnerAdapter(this, 
+				getContentResolver().query(DBContract.DutyTable.CONTENT_URI, null, null, null, null), 
+				DBContract.DutyTable.POS_NAME));
 	}
 	
 	private class SpinnerAdapter extends CursorAdapter {
@@ -73,12 +74,7 @@ public class LoginActivity extends Activity {
 			showDialog("请选择用户");
 		} else if (duty == AdapterView.INVALID_POSITION) {
 			showDialog("请选择岗位");
-		} else {
-			mUserCursor.moveToPosition(user);
-			user = mUserCursor.getInt(0);
-			mDutyCursor.moveToPosition(duty);
-			duty = mDutyCursor.getInt(0);
-			
+		} else {			
 			SharedPreferences.Editor editor = mSpApp.edit();
 			editor.putInt("User", user);
 			editor.putInt("Duty", duty);

@@ -7,7 +7,7 @@ import android.provider.BaseColumns;
  * ÆõÔ¼ÎÄ¼þ
  */
 public class DBContract {
-	public static final int VERSION = 2;
+	public static final int VERSION = 5;
 	
 	// The same as "android:authorities" in AndroidManifest.xml
 	public static String AUTHORITY = "com.example.wagontester.db";
@@ -117,17 +117,17 @@ public class DBContract {
 		public static final Uri CONTENT_URI = Uri.parse(PROTOCOL + AUTHORITY + "/" + TABLE_NAME);
 		
 		public static final int POS_ID = 0;
-		public static final int POS_NAME = 1;
-		public static final int POS_PART = 2;
+		public static final int POS_PART = 1;
+		public static final int POS_NAME = 2;
 		
-		public static final String KEY_NAME = "fault_name";
 		public static final String KEY_PART = "part_id";
+		public static final String KEY_NAME = "fault_name";
 		
 		public static final String CMD_CREATE = 
 				"create table " + TABLE_NAME + "(" + 
 				_ID + " integer primary key autoincrement, " +
-				KEY_NAME + " text, " +
-				KEY_PART + " integer " +
+				KEY_PART + " integer, " +
+				KEY_NAME + " text " +
 				" ) ";
 		public static final String CMD_DROP = "drop table if exists " + TABLE_NAME;
 	}
@@ -204,16 +204,16 @@ public class DBContract {
 		public static final int POS_IMAGE = 4;
 		
 		public static final String KEY_TASK = "task_id";
-		public static final String KEY_PART = "part_id";
-		public static final String KEY_FAULT = "fault_id";
+		public static final String KEY_PART = "part_name";
+		public static final String KEY_FAULT = "fault_name";
 		public static final String KEY_IMAGE = "image_path";
 		
 		public static final String CMD_CREATE = 
 				"create table " + TABLE_NAME + "(" + 
 				_ID + " integer primary key autoincrement, " +
 				KEY_TASK + " integer, " +
-				KEY_PART + " integer, " +
-				KEY_FAULT + " integer, " +
+				KEY_PART + " text, " +
+				KEY_FAULT + " text, " +
 				KEY_IMAGE + " text " +
 				" ) ";
 		public static final String CMD_DROP = "drop table if exists " + TABLE_NAME;

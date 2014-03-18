@@ -86,6 +86,12 @@ public class MainActivity extends Activity {
 	}
 	
 	@Override
+	public void onRestart() {
+		super.onRestart();
+		mListHelper.requery();
+	}
+	
+	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
@@ -105,12 +111,16 @@ public class MainActivity extends Activity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
+		Intent intent;
 		switch (item.getItemId()) {
 		case R.id.add:
+			intent = new Intent(MainActivity.this, TaskActivity.class);
+			intent.putExtra(TaskActivity.EXTRA_MODE, TaskActivity.MODE_NEW);
+			startActivity(intent);		
 		case R.id.upload:
 			break;
 		case R.id.change:
-			Intent intent = new Intent(this, LoginActivity.class);
+			intent = new Intent(this, LoginActivity.class);
 	    	startActivity(intent);
 			this.finish();
 			break;
@@ -368,34 +378,11 @@ public class MainActivity extends Activity {
 		}
 
 		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-			Cursor c = getCursor();
-			c.moveToPosition(position);
-			boolean isFinished = (c.getInt(DBContract.TaskTable.POS_STATUS) == 1); 
-
-			if (!isFinished) {
-				// TODO 初次修改
-			} else {
-				AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-				builder	.setTitle("选择操作：")
-						.setPositiveButton("查看", new DialogInterface.OnClickListener() {
-						
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								// TODO 只读
-							}
-							
-						})
-						.setNeutralButton("修改", new DialogInterface.OnClickListener() {
-						
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								// TODO 二次修改
-							}
-							
-						})
-						.show();
-			}
+		public void onItemClick(AdapterView<?> parent, View view, int position, final long id) {
+			Intent intent = new Intent(MainActivity.this, TaskActivity.class);
+			intent.putExtra(TaskActivity.EXTRA_MODE, TaskActivity.MODE_MODIFY);
+			intent.putExtra(TaskActivity.EXTRA_TASK, (int)id);
+			startActivity(intent);
 		}
 
 		@Override
@@ -405,7 +392,7 @@ public class MainActivity extends Activity {
 				    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
 				    	@Override
 				    	public void onClick(DialogInterface dialog, int which) {
-				    		// TODO 删除
+				    		// TODO 删除任务
 				    	}
 					})
 					.setNegativeButton("取消", null)
