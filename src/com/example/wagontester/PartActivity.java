@@ -7,6 +7,7 @@ import com.example.wagontester.db.DBContract;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
@@ -66,10 +67,9 @@ public class PartActivity extends Activity {
 		
 		// Set views
 		mDummyView.setOnClickListener(new View.OnClickListener() {
-			
 			@Override
-			public void onClick(View arg0) {
-				// TODO ´ò¿ªPhotoActivity
+			public void onClick(View view) {
+				startActivityForResult(new Intent(PartActivity.this, PhotoActivity.class), 0);
 			}
 		});
 		
@@ -120,6 +120,13 @@ public class PartActivity extends Activity {
 			break;
 		}
 		return true;
+	}
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == RESULT_OK) {
+			// TODO
+		}
 	}
 	
 	private void reset() {
