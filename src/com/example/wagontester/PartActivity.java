@@ -3,6 +3,7 @@ package com.example.wagontester;
 import java.io.File;
 import java.util.ArrayList;
 
+import com.example.wagontester.common.Utility;
 import com.example.wagontester.db.DBContract;
 
 import android.app.Activity;
@@ -130,21 +131,7 @@ public class PartActivity extends Activity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		
-		ArrayList<String> fileInDatabase = new ArrayList<String>();
-		Cursor c = getContentResolver().query(DBContract.ContentTable.CONTENT_URI, 
-				new String[] {DBContract.ContentTable.KEY_IMAGE}, null, null, null);
-		for(c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-			if (!fileInDatabase.contains(c.getString(0))) {
-				fileInDatabase.add(c.getString(0));
-			}
-		}
-		
-		for(File f : getFilesDir().listFiles()) {
-			if(!fileInDatabase.contains(f.getAbsolutePath())) {
-				f.delete();
-			}
-		}
+		Utility.deleteUnlinkedPhotos(this);
 	}
 	
 	@Override

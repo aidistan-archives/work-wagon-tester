@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.example.wagontester.R;
 import com.example.wagontester.common.TaskView;
+import com.example.wagontester.common.Utility;
 import com.example.wagontester.db.DBContract;
 
 import android.app.Activity;
@@ -117,6 +118,7 @@ public class MainActivity extends Activity {
 			intent.putExtra(TaskActivity.EXTRA_MODE, TaskActivity.MODE_NEW);
 			startActivity(intent);		
 		case R.id.upload:
+			// Upload Files
 			break;
 		case R.id.change:
 			intent = new Intent(this, LoginActivity.class);
@@ -270,7 +272,6 @@ public class MainActivity extends Activity {
 				break;
 			}
 		}
-		
 	}
 	
 	private class ListHelper extends CursorAdapter implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
@@ -366,13 +367,14 @@ public class MainActivity extends Activity {
 		}
 
 		@Override
-		public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+		public boolean onItemLongClick(AdapterView<?> parent, View view, int position, final long id) {
 			new AlertDialog.Builder(MainActivity.this)
 					.setTitle("删除任务：")
 				    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
 				    	@Override
 				    	public void onClick(DialogInterface dialog, int which) {
-				    		// TODO 删除任务
+				    		Utility.deleteTask(MainActivity.this, (int)id);
+				    		requery();
 				    	}
 					})
 					.setNegativeButton("取消", null)
