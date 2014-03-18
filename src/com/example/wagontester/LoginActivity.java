@@ -67,8 +67,8 @@ public class LoginActivity extends Activity {
 	}
 	
 	public void onLogin(View view) {
-		int user = mUserSpinner.getSelectedItemPosition();
-		int duty = mDutySpinner.getSelectedItemPosition();
+		int user = (int)mUserSpinner.getSelectedItemId();
+		int duty = (int)mDutySpinner.getSelectedItemId();
 		
 		if(user == AdapterView.INVALID_POSITION) {
 			showDialog("«Î—°‘Ò”√ªß");

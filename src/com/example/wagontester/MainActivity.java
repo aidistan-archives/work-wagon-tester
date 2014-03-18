@@ -380,7 +380,7 @@ public class MainActivity extends Activity {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position, final long id) {
 			Intent intent = new Intent(MainActivity.this, TaskActivity.class);
-			intent.putExtra(TaskActivity.EXTRA_MODE, TaskActivity.MODE_MODIFY);
+			intent.putExtra(TaskActivity.EXTRA_MODE, TaskActivity.MODE_WORK);
 			intent.putExtra(TaskActivity.EXTRA_TASK, (int)id);
 			startActivity(intent);
 		}

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     
-    <item android:id="@+id/manual" android:title="添加部件"/>
     <item android:id="@+id/auto" android:title="使用预置" />
     <item android:id="@+id/save" android:title="完成添加" />
 	
