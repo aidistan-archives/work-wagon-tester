@@ -1,16 +1,22 @@
 package com.example.wagontester;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
+import java.util.Calendar;
+import java.util.Locale;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -83,7 +89,7 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
             break;
 		case KeyEvent.KEYCODE_ENTER:
 			if(isOnPostview) {
-//				new SaveImageTask().execute(0);
+				new SaveImageTask().execute(0);
 			} else {
 				isOnPostview = true;
 				setIfBusy(true);
@@ -149,47 +155,47 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
 		mCamera.release();
 		mCamera = null;
 	}
-}
 
-//	class SaveImageTask extends AsyncTask<Integer, Integer, String>{
-//
-//		@Override
-//		protected String doInBackground(Integer... arg0) {
-//			String filename = PhotoActivity.this.getFilesDir().getPath() + "/temp_" + 
-//	                  DateFormat.format("yyyyMMdd_hhmmss",Calendar.getInstance(Locale.CHINA)) + ".jpg";
-//			
-//			try {
-//				FileOutputStream fOut = new FileOutputStream(filename);
-//				mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
-//				
-//				fOut.flush();
-//				fOut.close();
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//				Toast.makeText(PhotoActivity.this, "Í¼Æ¬±£´æ³ö´í...", Toast.LENGTH_SHORT).show();
-//				return null;
-//			}
-//			return filename;
-//		}
-//		
-//		@Override
-//		public void onPreExecute() {
-//			isKeyLocked = true;
-//			mProgressBar.setVisibility(View.VISIBLE);
-//		}
-//		
-//		@Override
-//		public void onPostExecute(String r) {
-//			mProgressBar.setVisibility(View.GONE);
-//			if(r != null) {
-//				mPostView.setVisibility(View.GONE);
-//				mBitmap.recycle();
-//				
-//				setResult(RESULT_OK, new Intent().putExtra(INTENT_FIELD , r));
-//				finish();
-//			} else {
-//				isKeyLocked = false;
-//			}
-//		}
-//	}
+	class SaveImageTask extends AsyncTask<Integer, Integer, String>{
+
+		@Override
+		protected String doInBackground(Integer... arg0) {
+			Log.v("aidi", getFilesDir().getPath());
+			String filename = getFilesDir().getPath() + "/photo_" + 
+	                  DateFormat.format("yyyyMMdd_hhmmss",Calendar.getInstance(Locale.CHINA)) + ".jpg";
+			
+			try {
+				FileOutputStream fOut = new FileOutputStream(filename);
+				mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
+				
+				fOut.flush();
+				fOut.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+				Toast.makeText(PhotoActivity.this, "Í¼Æ¬±£´æ³ö´í...", Toast.LENGTH_SHORT).show();
+				return null;
+			}
+			
+			return filename;
+		}
+		
+		@Override
+		public void onPreExecute() {
+			setIfBusy(true);
+		}
+		
+		@Override
+		public void onPostExecute(String filename) {
+			setIfBusy(false);
+			if(filename != null) {
+				mPostView.setVisibility(View.GONE);
+				mPostView.setImageDrawable(null);
+				mBitmap.recycle();
+				
+				setResult(RESULT_OK, new Intent().putExtra(EXTRA , filename));
+				finish();
+			}
+		}
+	}
+}
 
