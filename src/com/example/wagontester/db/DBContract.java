@@ -7,7 +7,7 @@ import android.provider.BaseColumns;
  * ÆõÔ¼ÎÄ¼þ
  */
 public class DBContract {
-	public static final int VERSION = 5;
+	public static final int VERSION = 6;
 	
 	// The same as "android:authorities" in AndroidManifest.xml
 	public static String AUTHORITY = "com.example.wagontester.db";
@@ -170,7 +170,7 @@ public class DBContract {
 		
 		public static final String KEY_USER = "user_id";
 		public static final String KEY_DUTY = "duty_id";
-		public static final String KEY_MODEL = "model_id";
+		public static final String KEY_MODEL = "model_number";
 		public static final String KEY_WAGON = "wagon_number";
 		public static final String KEY_PLATFORM = "platform_number";
 		public static final String KEY_DATE = "date";
@@ -181,7 +181,7 @@ public class DBContract {
 				_ID + " integer primary key autoincrement, " +
 				KEY_USER + " integer, " +
 				KEY_DUTY + " integer, " +
-				KEY_MODEL + " integer, " +
+				KEY_MODEL + " text, " +
 				KEY_WAGON + " text, " +
 				KEY_PLATFORM + " text, " +
 				KEY_DATE + " text, " +

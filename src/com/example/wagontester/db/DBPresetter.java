@@ -7,7 +7,7 @@ import android.content.ContentValues;
  *  Preset Tables
  */
 public class DBPresetter {
-	public static final int VERSION = 5;
+	public static final int VERSION = 8;
 	
 	private static ContentResolver cr;
 	
@@ -16,12 +16,13 @@ public class DBPresetter {
 		
 		set_users();
 		set_duties();
+		set_faults();
 		set_models();
 		
 		ContentValues cv = new ContentValues();
 		cv.put(DBContract.TaskTable.KEY_USER, 1);
 		cv.put(DBContract.TaskTable.KEY_DUTY, 1);
-		cv.put(DBContract.TaskTable.KEY_MODEL, 1);
+		cv.put(DBContract.TaskTable.KEY_MODEL, "Ha");
 		cv.put(DBContract.TaskTable.KEY_PLATFORM, "12");
 		cv.put(DBContract.TaskTable.KEY_DATE, "17/03/2014");
 		cv.put(DBContract.TaskTable.KEY_WAGON, "123456");
@@ -31,7 +32,7 @@ public class DBPresetter {
 		cv = new ContentValues();
 		cv.put(DBContract.TaskTable.KEY_USER, 4);
 		cv.put(DBContract.TaskTable.KEY_DUTY, 1);
-		cv.put(DBContract.TaskTable.KEY_MODEL, 1);
+		cv.put(DBContract.TaskTable.KEY_MODEL, "Yay");
 		cv.put(DBContract.TaskTable.KEY_PLATFORM, "12");
 		cv.put(DBContract.TaskTable.KEY_DATE, "16/03/2014");
 		cv.put(DBContract.TaskTable.KEY_WAGON, "123456");
@@ -51,122 +52,6 @@ public class DBPresetter {
 		cv.put(DBContract.UserTable.KEY_NAME, "冯毅"); cr.insert(DBContract.UserTable.CONTENT_URI, cv);
 		cv.put(DBContract.UserTable.KEY_NAME, "孙长睿"); cr.insert(DBContract.UserTable.CONTENT_URI, cv);
 	}
-
-	private static void set_duties() {
-		int duty;
-		int part;
-		ContentValues cv_duty = new ContentValues();
-		ContentValues cv_part = new ContentValues();
-		ContentValues cv_fault = new ContentValues();
-
-		cv_duty.put(DBContract.DutyTable.KEY_NAME, "车体");
-		duty = Integer.parseInt(cr.insert(DBContract.DutyTable.CONTENT_URI, cv_duty).getLastPathSegment());
-		cv_part.put(DBContract.PartTable.KEY_DUTY, duty);
-			cv_part.put(DBContract.PartTable.KEY_NAME, "大车型车号标记");
-			part = Integer.parseInt(cr.insert(DBContract.PartTable.CONTENT_URI, cv_part).getLastPathSegment());
-			cv_fault.put(DBContract.FaultTable.KEY_PART, part);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "不清");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "错误");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-			cv_part.put(DBContract.PartTable.KEY_NAME, "牵引梁外侧（1）");
-			part = Integer.parseInt(cr.insert(DBContract.PartTable.CONTENT_URI, cv_part).getLastPathSegment());
-			cv_fault.put(DBContract.FaultTable.KEY_PART, part);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "裂纹");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "磨耗或腐蚀过限");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "弯曲变形");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "破损");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-			cv_part.put(DBContract.PartTable.KEY_NAME, "牵引梁外侧（2）");
-			part = Integer.parseInt(cr.insert(DBContract.PartTable.CONTENT_URI, cv_part).getLastPathSegment());
-			cv_fault.put(DBContract.FaultTable.KEY_PART, part);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "裂纹");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "磨耗或腐蚀过限");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "弯曲变形");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "破损");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-			cv_part.put(DBContract.PartTable.KEY_NAME, "牵引梁外侧（3）");
-			part = Integer.parseInt(cr.insert(DBContract.PartTable.CONTENT_URI, cv_part).getLastPathSegment());
-			cv_fault.put(DBContract.FaultTable.KEY_PART, part);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "裂纹");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "磨耗或腐蚀过限");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "弯曲变形");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "破损");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-			cv_part.put(DBContract.PartTable.KEY_NAME, "牵引梁外侧（4）");
-			part = Integer.parseInt(cr.insert(DBContract.PartTable.CONTENT_URI, cv_part).getLastPathSegment());
-			cv_fault.put(DBContract.FaultTable.KEY_PART, part);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "裂纹");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "磨耗或腐蚀过限");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "弯曲变形");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "破损");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-		cv_duty.put(DBContract.DutyTable.KEY_NAME, "制连");
-		duty = Integer.parseInt(cr.insert(DBContract.DutyTable.CONTENT_URI, cv_duty).getLastPathSegment());
-		cv_part.put(DBContract.PartTable.KEY_DUTY, duty);
-			cv_part.put(DBContract.PartTable.KEY_NAME, "大车型车号标记");
-			part = Integer.parseInt(cr.insert(DBContract.PartTable.CONTENT_URI, cv_part).getLastPathSegment());
-			cv_fault.put(DBContract.FaultTable.KEY_PART, part);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "不清");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "错误");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-			cv_part.put(DBContract.PartTable.KEY_NAME, "1位上拉杆与1位移动杠杆组装圆销及开口销");
-			part = Integer.parseInt(cr.insert(DBContract.PartTable.CONTENT_URI, cv_part).getLastPathSegment());
-			cv_fault.put(DBContract.FaultTable.KEY_PART, part);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "裂纹");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "间隙超限");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "磨耗或腐蚀过限");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "弯曲变形");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "铸造缺陷");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "作用不良");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "破损");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "错装");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "漏装");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-			cv_part.put(DBContract.PartTable.KEY_NAME, "2位上拉杆与2位移动杠杆组装圆销及开口销");
-			part = Integer.parseInt(cr.insert(DBContract.PartTable.CONTENT_URI, cv_part).getLastPathSegment());
-			cv_fault.put(DBContract.FaultTable.KEY_PART, part);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "裂纹");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "间隙超限");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "磨耗或腐蚀过限");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "弯曲变形");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "铸造缺陷");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "作用不良");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "破损");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "错装");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-				cv_fault.put(DBContract.FaultTable.KEY_NAME, "漏装");
-				cr.insert(DBContract.FaultTable.CONTENT_URI, cv_fault);
-	}
-
 	private static void set_models() {
 		ContentValues cv = new ContentValues();
 		cv.put(DBContract.ModelTable.KEY_NAME, "C16"); cr.insert(DBContract.ModelTable.CONTENT_URI, cv);
@@ -175,5 +60,48 @@ public class DBPresetter {
 		cv.put(DBContract.ModelTable.KEY_NAME, "C61K"); cr.insert(DBContract.ModelTable.CONTENT_URI, cv);
 		cv.put(DBContract.ModelTable.KEY_NAME, "C61T"); cr.insert(DBContract.ModelTable.CONTENT_URI, cv);
 	}
+	private static void set_duties() {
+		int duty;
+		ContentValues cv_duty = new ContentValues();
+		ContentValues cv_part = new ContentValues();
 
+		cv_duty.put(DBContract.DutyTable.KEY_NAME, "车体");
+		duty = Integer.parseInt(cr.insert(DBContract.DutyTable.CONTENT_URI, cv_duty).getLastPathSegment());
+		cv_part.put(DBContract.PartTable.KEY_DUTY, duty);
+			cv_part.put(DBContract.PartTable.KEY_NAME, "大车型车号标记");cr.insert(DBContract.PartTable.CONTENT_URI, cv_part);
+			cv_part.put(DBContract.PartTable.KEY_NAME, "牵引梁外侧（1）");cr.insert(DBContract.PartTable.CONTENT_URI, cv_part);
+			cv_part.put(DBContract.PartTable.KEY_NAME, "牵引梁外侧（2）");cr.insert(DBContract.PartTable.CONTENT_URI, cv_part);
+			cv_part.put(DBContract.PartTable.KEY_NAME, "牵引梁外侧（3）");cr.insert(DBContract.PartTable.CONTENT_URI, cv_part);
+			cv_part.put(DBContract.PartTable.KEY_NAME, "牵引梁外侧（4）");cr.insert(DBContract.PartTable.CONTENT_URI, cv_part);
+		cv_duty.put(DBContract.DutyTable.KEY_NAME, "制连");
+		duty = Integer.parseInt(cr.insert(DBContract.DutyTable.CONTENT_URI, cv_duty).getLastPathSegment());
+		cv_part.put(DBContract.PartTable.KEY_DUTY, duty);
+			cv_part.put(DBContract.PartTable.KEY_NAME, "大车型车号标记");cr.insert(DBContract.PartTable.CONTENT_URI, cv_part);
+	}
+	private static void set_faults() {
+		ContentValues cv = new ContentValues();
+		cv.put(DBContract.FaultTable.KEY_PART, "大车型车号标记");
+			cv.put(DBContract.FaultTable.KEY_NAME, "不清");cr.insert(DBContract.FaultTable.CONTENT_URI, cv);
+			cv.put(DBContract.FaultTable.KEY_NAME, "错误");cr.insert(DBContract.FaultTable.CONTENT_URI, cv);
+		cv.put(DBContract.FaultTable.KEY_PART, "牵引梁外侧（1）");
+			cv.put(DBContract.FaultTable.KEY_NAME, "裂纹");cr.insert(DBContract.FaultTable.CONTENT_URI, cv);
+			cv.put(DBContract.FaultTable.KEY_NAME, "磨耗或腐蚀过限");cr.insert(DBContract.FaultTable.CONTENT_URI, cv);
+			cv.put(DBContract.FaultTable.KEY_NAME, "弯曲变形");cr.insert(DBContract.FaultTable.CONTENT_URI, cv);
+			cv.put(DBContract.FaultTable.KEY_NAME, "破损");cr.insert(DBContract.FaultTable.CONTENT_URI, cv);
+		cv.put(DBContract.FaultTable.KEY_PART, "牵引梁外侧（2）");
+			cv.put(DBContract.FaultTable.KEY_NAME, "裂纹");cr.insert(DBContract.FaultTable.CONTENT_URI, cv);
+			cv.put(DBContract.FaultTable.KEY_NAME, "磨耗或腐蚀过限");cr.insert(DBContract.FaultTable.CONTENT_URI, cv);
+			cv.put(DBContract.FaultTable.KEY_NAME, "弯曲变形");cr.insert(DBContract.FaultTable.CONTENT_URI, cv);
+			cv.put(DBContract.FaultTable.KEY_NAME, "破损");cr.insert(DBContract.FaultTable.CONTENT_URI, cv);
+		cv.put(DBContract.FaultTable.KEY_PART, "牵引梁外侧（3）");
+			cv.put(DBContract.FaultTable.KEY_NAME, "裂纹");cr.insert(DBContract.FaultTable.CONTENT_URI, cv);
+			cv.put(DBContract.FaultTable.KEY_NAME, "磨耗或腐蚀过限");cr.insert(DBContract.FaultTable.CONTENT_URI, cv);
+			cv.put(DBContract.FaultTable.KEY_NAME, "弯曲变形");cr.insert(DBContract.FaultTable.CONTENT_URI, cv);
+			cv.put(DBContract.FaultTable.KEY_NAME, "破损");cr.insert(DBContract.FaultTable.CONTENT_URI, cv);
+		cv.put(DBContract.FaultTable.KEY_PART, "牵引梁外侧（4）");
+			cv.put(DBContract.FaultTable.KEY_NAME, "裂纹");cr.insert(DBContract.FaultTable.CONTENT_URI, cv);
+			cv.put(DBContract.FaultTable.KEY_NAME, "磨耗或腐蚀过限");cr.insert(DBContract.FaultTable.CONTENT_URI, cv);
+			cv.put(DBContract.FaultTable.KEY_NAME, "弯曲变形");cr.insert(DBContract.FaultTable.CONTENT_URI, cv);
+			cv.put(DBContract.FaultTable.KEY_NAME, "破损");cr.insert(DBContract.FaultTable.CONTENT_URI, cv);
+	}
 }

@@ -2,7 +2,6 @@ package com.example.wagontester;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.Locale;
 
 import com.example.wagontester.db.DBContract;
@@ -21,6 +20,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -39,7 +40,8 @@ public class TaskActivity extends Activity {
 	
 	// Views
 	private TextView mWagonView, mWagonText, mUserText, mDutyText, mModelView, mModelText, mPlatformView, mPlatformText, mDateText;
-	private EditText mWagonEdit, mModelEdit, mPlatformEdit;
+	private EditText mWagonEdit, mPlatformEdit;
+	private AutoCompleteTextView mModelEdit;
 	private ListView mListView;
 	
 	private ArrayList<String> mArrayList = new ArrayList<String>();
@@ -66,7 +68,7 @@ public class TaskActivity extends Activity {
         mPlatformText = (TextView)findViewById(R.id.platformText);
         mDateText = (TextView)findViewById(R.id.dateText);
         mWagonEdit = (EditText)findViewById(R.id.wagonEdit);
-        mModelEdit = (EditText)findViewById(R.id.modelEdit);
+        mModelEdit = (AutoCompleteTextView)findViewById(R.id.modelEdit);
         mPlatformEdit = (EditText)findViewById(R.id.platformEdit);
         mListView = (ListView)findViewById(R.id.listView);
         
@@ -102,12 +104,23 @@ public class TaskActivity extends Activity {
         			"_id=" + String.valueOf(mSpApp.getInt("User", 0)), null, null);
         	c.moveToFirst();
         	mUserText.setText(c.getString(0));
+        	c.close();
         	c = getContentResolver().query(DBContract.DutyTable.CONTENT_URI, 
         			new String[] {DBContract.DutyTable.KEY_NAME}, 
         			"_id=" + String.valueOf(mSpApp.getInt("Duty", 0)), null, null);
         	c.moveToFirst();
         	mDutyText.setText(c.getString(0));
+        	c.close();
+        	
         	mDateText.setText(DateFormat.format("dd/MM/yyyy",Calendar.getInstance(Locale.CHINA)));
+        	
+        	ArrayList<String> modelList = new ArrayList<String>();
+        	c = getContentResolver().query(DBContract.ModelTable.CONTENT_URI, null,null,null,null);
+        	for(c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+        		modelList.add(c.getString(DBContract.ModelTable.POS_NAME));
+        	}
+			mModelEdit.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, modelList));
+			c.close();
         } else {
         	
         }
@@ -152,16 +165,26 @@ public class TaskActivity extends Activity {
 					Toast.makeText(this, "未填写台号", Toast.LENGTH_LONG).show();
 				} else if (mArrayList.isEmpty()) {
 					Toast.makeText(this, "未添加部件", Toast.LENGTH_LONG).show();
+				} else {
+					ContentValues cv_task = new ContentValues();
+					cv_task.put(DBContract.TaskTable.KEY_DUTY, mSpApp.getInt("Duty", 0));
+					cv_task.put(DBContract.TaskTable.KEY_USER, mSpApp.getInt("User", 0));
+					cv_task.put(DBContract.TaskTable.KEY_WAGON, mWagonEdit.getText().toString());
+					cv_task.put(DBContract.TaskTable.KEY_PLATFORM, mPlatformEdit.getText().toString());
+					cv_task.put(DBContract.TaskTable.KEY_DATE, (String) mDateText.getText());
+					mTaskID = Integer.parseInt(getContentResolver().insert(DBContract.TaskTable.CONTENT_URI, cv_task).getLastPathSegment());
+					
+					ContentValues cv_content = new ContentValues();
+					cv_content.put(DBContract.ContentTable.KEY_TASK, mTaskID);
+					cv_content.put(DBContract.ContentTable.KEY_FAULT, "");
+					cv_content.put(DBContract.ContentTable.KEY_IMAGE, "");
+					for (String s : mArrayList) {
+						cv_content.put(DBContract.ContentTable.KEY_PART, s);
+						getContentResolver().insert(DBContract.ContentTable.CONTENT_URI, cv_content);
+					}
+					
+					this.finish();
 				}
-				
-//				ContentValues cv = new ContentValues();
-//				cv.put(DBContract.ContentTable.KEY_TASK, "");
-//				cv.put(DBContract.ContentTable.KEY_FAULT, "");
-//				cv.put(DBContract.ContentTable.KEY_IMAGE, "");
-//				for (String s : mArrayList) {
-//					cv.put(DBContract.ContentTable.KEY_PART, s);
-//				}
-//				this.finish();
 				break;
 			}
 		} else {

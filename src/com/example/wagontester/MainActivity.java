@@ -196,26 +196,15 @@ public class MainActivity extends Activity {
 						}
 						break;
 					case SORT_BY_MODEL:
-						// Get model ids
 						cursor = getContentResolver().query(DBContract.TaskTable.CONTENT_URI, 
 								new String[] {DBContract.TaskTable.KEY_MODEL}, null, null, DBContract.TaskTable.KEY_MODEL);
 						for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
 						{
-							if (!idList.contains(cursor.getInt(0))) {
-								idList.add(cursor.getInt(0));
+							if (!mArrayList.contains(cursor.getString(0))) {
+								mArrayList.add(cursor.getString(0));
 							}
 						}
 						cursor.close();
-						
-						// Get model names
-						for(Integer model_id : idList) {
-							cursor = getContentResolver().query(
-									Uri.withAppendedPath(DBContract.ModelTable.CONTENT_URI, String.valueOf(idList.get(model_id))), 
-									new String[] {DBContract.ModelTable.KEY_NAME}, null, null, null);
-							cursor.moveToFirst();
-							mArrayList.add(cursor.getString(0));
-							cursor.close();
-						}
 						break;
 					case SORT_BY_WAGON:
 						cursor = getContentResolver().query(DBContract.TaskTable.CONTENT_URI, 
@@ -306,6 +295,7 @@ public class MainActivity extends Activity {
 			taskView.wagonView.setText(cursor.getString(DBContract.TaskTable.POS_WAGON));
 			taskView.platformView.setText(cursor.getString(DBContract.TaskTable.POS_PLATFORM));
 			taskView.dateView.setText(cursor.getString(DBContract.TaskTable.POS_DATE));
+			taskView.modelView.setText(cursor.getString(DBContract.TaskTable.POS_MODEL));
 			
 			// ID
 			Cursor c;
@@ -319,11 +309,6 @@ public class MainActivity extends Activity {
 					null, null, null, null);
 			c.moveToFirst();
 			taskView.dutyView.setText(c.getString(DBContract.DutyTable.POS_NAME));
-			c = context.getContentResolver().query(
-					Uri.withAppendedPath(DBContract.ModelTable.CONTENT_URI, String.valueOf(cursor.getInt(DBContract.TaskTable.POS_MODEL))), 
-					null, null, null, null);
-			c.moveToFirst();
-			taskView.modelView.setText(c.getString(DBContract.ModelTable.POS_NAME));
 		}
 
 		@Override
@@ -355,12 +340,8 @@ public class MainActivity extends Activity {
 				c.close();
 				break;
 			case SORT_BY_MODEL:
-				c = getContentResolver().query(DBContract.ModelTable.CONTENT_URI, null, 
-						DBContract.ModelTable.KEY_NAME + "=?", new String[] {mTextView.getText().toString()}, null);
-				c.moveToFirst();
 				changeCursor(getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null, 
-						DBContract.TaskTable.KEY_MODEL + "=" + String.valueOf(c.getInt(0)), null, null));
-				c.close();
+						DBContract.TaskTable.KEY_MODEL + "=?", new String[] {mTextView.getText().toString()}, null));
 				break;
 			case SORT_BY_WAGON:
 				changeCursor(getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null, 
