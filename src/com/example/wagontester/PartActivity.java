@@ -104,7 +104,7 @@ public class PartActivity extends Activity {
 		
 		// Update views
 		mTextView.setText(mPartName);
-		resetViews();
+		reload();
 	}
 	
 	@Override
@@ -112,7 +112,7 @@ public class PartActivity extends Activity {
 		super.onResume();
 		
 		// Reload
-		loadImage();
+		setViews();
 	}
 	
 	@Override
@@ -130,7 +130,21 @@ public class PartActivity extends Activity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		//TODO …æ≥˝∂‡”‡’’∆¨
+		
+		ArrayList<String> fileInDatabase = new ArrayList<String>();
+		Cursor c = getContentResolver().query(DBContract.ContentTable.CONTENT_URI, 
+				new String[] {DBContract.ContentTable.KEY_IMAGE}, null, null, null);
+		for(c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+			if (!fileInDatabase.contains(c.getString(0))) {
+				fileInDatabase.add(c.getString(0));
+			}
+		}
+		
+		for(File f : getFilesDir().listFiles()) {
+			if(!fileInDatabase.contains(f.getAbsolutePath())) {
+				f.delete();
+			}
+		}
 	}
 	
 	@Override
@@ -157,7 +171,8 @@ public class PartActivity extends Activity {
 			this.finish();
 			break;
 		case R.id.reset:
-			resetViews();
+			reload();
+			setViews();
 			break;
 		case R.id.clear:
 			mFault = "";
@@ -178,7 +193,7 @@ public class PartActivity extends Activity {
 		}
 	}
 	
-	private void resetViews() {
+	private void reload() {
 		Cursor c = getContentResolver().query(DBContract.ContentTable.CONTENT_URI, null, 
 				DBContract.ContentTable.KEY_TASK + "=" + String.valueOf(mTaskID) + " AND " + DBContract.ContentTable.KEY_PART + "=?", 
 				new String[] {mPartName}, null);
@@ -186,8 +201,6 @@ public class PartActivity extends Activity {
 		mFault = c.getString(DBContract.ContentTable.POS_FAULT);
 		mImagePath = c.getString(DBContract.ContentTable.POS_IMAGE);
 		c.close();
-		
-		setViews();
 	}
 	
 	private void setViews() {
@@ -195,9 +208,8 @@ public class PartActivity extends Activity {
 		if (mFault.equals("")) {
 			mToggleButton.setChecked(true);
 		} else {
-			String backup = new String(mFault);
 			mToggleButton.setChecked(false);
-			mSpinnerHelper.setFaultByString(backup);
+			mSpinnerHelper.update();
 		}
 		
 		// Image
@@ -234,12 +246,11 @@ public class PartActivity extends Activity {
 			return !mFault.equals("") && !mArrayList.contains(mFault);
 		}
 		
-		public void setFaultByString(String str) {
-			mFault = str;
+		public void update() {
 			if (mFault.equals("")) {
 				mSpinner.setSelection(0);
 			} else if (mArrayList.contains(mFault)) {
-				mSpinner.setSelection(mArrayList.indexOf(mFault));
+				mSpinner.setSelection(mArrayList.indexOf(mFault)+1);
 			} else {
 				mSpinner.setSelection(getCount()-2);
 			}
@@ -306,7 +317,8 @@ public class PartActivity extends Activity {
 						.setPositiveButton("»∑∂®", new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
-								setFaultByString(editText.getText().toString());
+								mFault = editText.getText().toString();
+								update();
 							}
 						})
 						.setOnCancelListener(new DialogInterface.OnCancelListener() {
