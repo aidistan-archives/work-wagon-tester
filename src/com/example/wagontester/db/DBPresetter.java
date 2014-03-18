@@ -7,7 +7,7 @@ import android.content.ContentValues;
  *  Preset Tables
  */
 public class DBPresetter {
-	public static final int VERSION = 9;
+	public static final int VERSION = 10;
 	
 	private static ContentResolver cr;
 	

@@ -125,6 +125,19 @@ public class TaskActivity extends Activity {
         } else {
         	c = getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null, "_id=" + String.valueOf(mTaskID), null, null);
         	c.moveToFirst();
+        	
+        	Cursor cursor;
+        	cursor = getContentResolver().query(DBContract.UserTable.CONTENT_URI, null, 
+        			"_id=" + String.valueOf(c.getInt(DBContract.TaskTable.POS_USER)), null, null);
+        	cursor.moveToFirst();
+        	mUserText.setText(cursor.getString(DBContract.UserTable.POS_NAME));
+        	cursor.close();
+        	cursor = getContentResolver().query(DBContract.DutyTable.CONTENT_URI, null, 
+        			"_id=" + String.valueOf(c.getInt(DBContract.TaskTable.POS_DUTY)), null, null);
+        	cursor.moveToFirst();
+        	mDutyText.setText(cursor.getString(DBContract.DutyTable.POS_NAME));
+        	cursor.close();
+        	
         	mWagonText.setText(c.getString(DBContract.TaskTable.POS_WAGON));
         	mModelText.setText(c.getString(DBContract.TaskTable.POS_MODEL));
         	mPlatformText.setText(c.getString(DBContract.TaskTable.POS_PLATFORM));
@@ -182,6 +195,7 @@ public class TaskActivity extends Activity {
 					ContentValues cv_task = new ContentValues();
 					cv_task.put(DBContract.TaskTable.KEY_DUTY, mSpApp.getInt("Duty", 0));
 					cv_task.put(DBContract.TaskTable.KEY_USER, mSpApp.getInt("User", 0));
+					cv_task.put(DBContract.TaskTable.KEY_MODEL, mModelEdit.getText().toString());
 					cv_task.put(DBContract.TaskTable.KEY_WAGON, mWagonEdit.getText().toString());
 					cv_task.put(DBContract.TaskTable.KEY_PLATFORM, mPlatformEdit.getText().toString());
 					cv_task.put(DBContract.TaskTable.KEY_DATE, (String) mDateText.getText());
