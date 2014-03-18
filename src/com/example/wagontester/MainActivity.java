@@ -164,9 +164,9 @@ public class MainActivity extends Activity {
 						cursor.close();
 						
 						// Get user names
-						for(int i=0; i<idList.size(); i++) {
+						for(Integer user_id : idList) {
 							cursor = getContentResolver().query(
-									Uri.withAppendedPath(DBContract.UserTable.CONTENT_URI, String.valueOf(idList.get(i))), 
+									Uri.withAppendedPath(DBContract.UserTable.CONTENT_URI, String.valueOf(idList.get(user_id))), 
 									new String[] {DBContract.UserTable.KEY_NAME}, null, null, null);
 							cursor.moveToFirst();
 							mArrayList.add(cursor.getString(0));
@@ -186,9 +186,9 @@ public class MainActivity extends Activity {
 						cursor.close();
 						
 						// Get duty names
-						for(int i=0; i<idList.size(); i++) {
+						for(Integer duty_id : idList) {
 							cursor = getContentResolver().query(
-									Uri.withAppendedPath(DBContract.DutyTable.CONTENT_URI, String.valueOf(idList.get(i))), 
+									Uri.withAppendedPath(DBContract.DutyTable.CONTENT_URI, String.valueOf(idList.get(duty_id))), 
 									new String[] {DBContract.DutyTable.KEY_NAME}, null, null, null);
 							cursor.moveToFirst();
 							mArrayList.add(cursor.getString(0));
@@ -208,9 +208,9 @@ public class MainActivity extends Activity {
 						cursor.close();
 						
 						// Get model names
-						for(int i=0; i<idList.size(); i++) {
+						for(Integer model_id : idList) {
 							cursor = getContentResolver().query(
-									Uri.withAppendedPath(DBContract.ModelTable.CONTENT_URI, String.valueOf(idList.get(i))), 
+									Uri.withAppendedPath(DBContract.ModelTable.CONTENT_URI, String.valueOf(idList.get(model_id))), 
 									new String[] {DBContract.ModelTable.KEY_NAME}, null, null, null);
 							cursor.moveToFirst();
 							mArrayList.add(cursor.getString(0));

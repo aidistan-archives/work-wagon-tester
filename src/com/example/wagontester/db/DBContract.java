@@ -120,13 +120,13 @@ public class DBContract {
 		public static final int POS_PART = 1;
 		public static final int POS_NAME = 2;
 		
-		public static final String KEY_PART = "part_id";
+		public static final String KEY_PART = "part_name";
 		public static final String KEY_NAME = "fault_name";
 		
 		public static final String CMD_CREATE = 
 				"create table " + TABLE_NAME + "(" + 
 				_ID + " integer primary key autoincrement, " +
-				KEY_PART + " integer, " +
+				KEY_PART + " text, " +
 				KEY_NAME + " text " +
 				" ) ";
 		public static final String CMD_DROP = "drop table if exists " + TABLE_NAME;

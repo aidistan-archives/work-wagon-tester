@@ -2,6 +2,7 @@ package com.example.wagontester;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.Locale;
 
 import com.example.wagontester.db.DBContract;
@@ -24,6 +25,7 @@ import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class TaskActivity extends Activity {
 	public static final String EXTRA_MODE = "com.example.wagontester.task_activity.mode";
@@ -142,7 +144,24 @@ public class TaskActivity extends Activity {
 				mListHelper.notifyDataSetChanged();
 				break;
 			case R.id.save:
+				if (mWagonEdit.getText().toString().isEmpty()) {
+					Toast.makeText(this, "Œ¥ÃÓ–¥≥µ∫≈", Toast.LENGTH_LONG).show();
+				} else if (mModelEdit.getText().toString().isEmpty()) {
+					Toast.makeText(this, "Œ¥ÃÓ–¥–Õ∫≈", Toast.LENGTH_LONG).show();
+				} else if (mPlatformEdit.getText().toString().isEmpty()) {
+					Toast.makeText(this, "Œ¥ÃÓ–¥Ã®∫≈", Toast.LENGTH_LONG).show();
+				} else if (mArrayList.isEmpty()) {
+					Toast.makeText(this, "Œ¥ÃÌº”≤øº˛", Toast.LENGTH_LONG).show();
+				}
 				
+//				ContentValues cv = new ContentValues();
+//				cv.put(DBContract.ContentTable.KEY_TASK, "");
+//				cv.put(DBContract.ContentTable.KEY_FAULT, "");
+//				cv.put(DBContract.ContentTable.KEY_IMAGE, "");
+//				for (String s : mArrayList) {
+//					cv.put(DBContract.ContentTable.KEY_PART, s);
+//				}
+//				this.finish();
 				break;
 			}
 		} else {
