@@ -1,5 +1,9 @@
 package com.example.wagontester;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import com.example.wagontester.R;
@@ -15,6 +19,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,6 +33,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	
@@ -118,7 +125,65 @@ public class MainActivity extends Activity {
 			intent.putExtra(TaskActivity.EXTRA_MODE, TaskActivity.MODE_NEW);
 			startActivity(intent);		
 		case R.id.upload:
-			// Upload Files
+			// Tasks to upload
+			ArrayList<Integer> taskList = new ArrayList<Integer>();
+			Cursor c = getContentResolver().query(DBContract.TaskTable.CONTENT_URI, new String[] {"_id"}, 
+					DBContract.TaskTable.KEY_STATUS + "=1", null, null);
+			for(c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+				taskList.add(c.getInt(0));
+			}
+			c.close();
+			
+			// Check
+//			if (taskList.size() == 0) {
+//				Toast.makeText(this, "无需导出", Toast.LENGTH_SHORT).show();
+//				break;
+//			}
+			
+			// TODO: Finish in future
+			File root = Environment.getExternalStorageDirectory();
+			root = new File(root.toURI().resolve("货车检查仪"));
+			if (!root.exists()) {
+				root.mkdir();
+			}
+			
+			// Each task
+			for(int task_id : taskList) {
+				File dir = new File(root.toURI().resolve(String.valueOf(task_id)));
+				dir.mkdir();
+				File file = new File(dir.toURI().resolve("任务.txt"));
+
+				try {
+					FileOutputStream fOut = new FileOutputStream(file);
+					
+					// Task
+					c = getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null, 
+							"_id=" + String.valueOf(task_id), null, null);
+					c.moveToFirst();
+					fOut.write(("车号：" + c.getString(DBContract.TaskTable.POS_WAGON) + "\r\n").getBytes());
+					fOut.write(("型号：" + c.getString(DBContract.TaskTable.POS_MODEL) + "\r\n").getBytes());
+					fOut.write(("台号：" + c.getString(DBContract.TaskTable.POS_PLATFORM) + "\r\n").getBytes());
+					fOut.write(("作业者：" + c.getString(DBContract.TaskTable.POS_USER) + "\r\n").getBytes());
+					fOut.write(("岗位：" + c.getString(DBContract.TaskTable.POS_DUTY) + "\r\n").getBytes());
+					fOut.write(("日期：" + c.getString(DBContract.TaskTable.POS_DATE) + "\r\n").getBytes());
+					c.close();
+					
+					// Parts
+					
+					fOut.flush();
+					fOut.close();
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+				Utility.deleteTask(this, task_id);
+			}
+			
+			// In the end
+			Toast.makeText(this, "导出完成", Toast.LENGTH_SHORT).show();
+			mListHelper.requery();
 			break;
 		case R.id.change:
 			intent = new Intent(this, LoginActivity.class);
