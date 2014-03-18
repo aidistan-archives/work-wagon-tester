@@ -16,7 +16,6 @@ import android.hardware.Camera.PictureCallback;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -24,7 +23,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-// TODO: Show the progress better
+
 public class PhotoActivity extends Activity implements SurfaceHolder.Callback, PictureCallback{
 	
 	public static final String EXTRA = "com.example.wagontester.photo_activity.image_path";
@@ -172,7 +171,6 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
 
 		@Override
 		protected String doInBackground(Integer... arg0) {
-			Log.v("aidi", getFilesDir().getPath());
 			String filename = getFilesDir().getPath() + "/photo_" + 
 	                  DateFormat.format("yyyyMMdd_hhmmss",Calendar.getInstance(Locale.CHINA)) + ".jpg";
 			
