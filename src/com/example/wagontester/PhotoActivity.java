@@ -28,10 +28,17 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
 	
 	public static final String EXTRA = "com.example.wagontester.photo_activity.image_path";
 
+	private static final int IS_INVALID = -1;
+	private static final int IS_ON_PREVIEW = 0;
+	private static final int IS_AUTO_FOCUSING = 1;
+	private static final int IS_TAKING_PHOTO = 2;
+	private static final int IS_ON_POSTVIEW = 3;
+	private static final int IS_SAVING_PHOTO = 4;
+	
+	private int mStatus = IS_INVALID;
+	
 	private Camera mCamera;
 	private Bitmap mBitmap = null;
-	private boolean isOnPostview = false;
-	private boolean isBusy;
 	
 	private SurfaceView mSurfaceView;
 	private SurfaceHolder mSurfaceHolder;
@@ -51,8 +58,7 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
 			// this is ignored, this value is set automatically when needed.
 		mPostView = (ImageView)findViewById(R.id.imageView);
 		mProgressBar = (ProgressBar)findViewById(R.id.progressBar);
-		
-		setIfBusy(false);
+		mProgressBar.setVisibility(View.GONE);
 	}
 	
 	@Override
@@ -67,56 +73,49 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
 		
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if(isBusy) {
-			return true;
-		}
-		
-		switch (keyCode) {
-		case KeyEvent.KEYCODE_SYSRQ: // KEYCODE_SCAN
-			if(!isOnPostview) {
+		switch (mStatus) {
+		case IS_ON_PREVIEW:
+			switch (keyCode) {
+			case KeyEvent.KEYCODE_SYSRQ: // SCAN键
+				mStatus = IS_AUTO_FOCUSING;
 				Toast.makeText(this, "自动对焦中...", Toast.LENGTH_SHORT).show();
 				mCamera.autoFocus(new Camera.AutoFocusCallback() {
 					@Override
 					public void onAutoFocus(boolean success, Camera camera) {
 						Toast.makeText(PhotoActivity.this, "对焦已完成", Toast.LENGTH_SHORT).show();
+						mStatus = IS_ON_PREVIEW;
 					}
 				});
+				break;
+			case KeyEvent.KEYCODE_BACK:
+				mStatus = IS_INVALID;
+				setResult(RESULT_CANCELED);
+				finish();
+				break;
+			case KeyEvent.KEYCODE_ENTER:
+				mStatus = IS_TAKING_PHOTO;
+				mProgressBar.setVisibility(View.VISIBLE);
+				mCamera.takePicture(null, null, PhotoActivity.this);
+				break;
 			}
 			break;
-		case KeyEvent.KEYCODE_BACK:
-			if(isOnPostview) {
+		case IS_ON_POSTVIEW:
+			switch (keyCode) {
+			case KeyEvent.KEYCODE_BACK:
 				mPostView.setVisibility(View.GONE);
 				mPostView.setImageDrawable(null);
 				mBitmap.recycle();
 				mBitmap = null;
-				
-				isOnPostview = false;
             	mCamera.startPreview();
-			} else {
-				setResult(RESULT_CANCELED);
-				finish();
-			}
-            break;
-		case KeyEvent.KEYCODE_ENTER:
-			if(isOnPostview) {
+            	mStatus = IS_ON_PREVIEW;
+				break;
+			case KeyEvent.KEYCODE_ENTER:
 				new SaveImageTask().execute(0);
-			} else {
-				isOnPostview = true;
-				setIfBusy(true);
-				mCamera.takePicture(null, null, PhotoActivity.this);
+				break;
 			}
 			break;
 		}
 		return true;
-	}
-	
-	private void setIfBusy(boolean b) {
-		isBusy = b;
-		if (isBusy) {
-			mProgressBar.setVisibility(View.VISIBLE);
-		} else {
-			mProgressBar.setVisibility(View.GONE);
-		}
 	}
 
 	@Override
@@ -135,7 +134,8 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
         mPostView.setImageBitmap(mBitmap);
         mPostView.setVisibility(View.VISIBLE);
         
-        setIfBusy(false);
+        mProgressBar.setVisibility(View.INVISIBLE);
+        mStatus = IS_ON_POSTVIEW;
 	}
 
 	@Override
@@ -147,6 +147,7 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
 		mCamera.setParameters(parameters);
 		mCamera.setDisplayOrientation(90);
 		mCamera.startPreview();
+		mStatus = IS_ON_PREVIEW;
 	}
 
 	@Override
@@ -191,12 +192,15 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
 		
 		@Override
 		public void onPreExecute() {
-			setIfBusy(true);
+			mProgressBar.setVisibility(View.VISIBLE);
+			mStatus = IS_SAVING_PHOTO;
 		}
 		
 		@Override
 		public void onPostExecute(String filename) {
-			setIfBusy(false);
+			mProgressBar.setVisibility(View.INVISIBLE);
+			mStatus = IS_INVALID;
+			
 			if(filename != null) {
 				setResult(RESULT_OK, new Intent().putExtra(EXTRA , filename));
 				finish();
