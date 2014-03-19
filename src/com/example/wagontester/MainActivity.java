@@ -8,7 +8,6 @@ import java.util.ArrayList;
 
 import com.example.wagontester.R;
 import com.example.wagontester.common.TaskView;
-import com.example.wagontester.common.Utility;
 import com.example.wagontester.db.DBContract;
 
 import android.app.Activity;
@@ -20,7 +19,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -178,7 +176,7 @@ public class MainActivity extends Activity {
 					e.printStackTrace();
 				}
 				
-				Utility.deleteTask(this, task_id);
+				WagonTester.deleteTask(task_id);
 			}
 			
 			// In the end
@@ -438,7 +436,7 @@ public class MainActivity extends Activity {
 				    .setPositiveButton("È·¶¨", new DialogInterface.OnClickListener() {
 				    	@Override
 				    	public void onClick(DialogInterface dialog, int which) {
-				    		Utility.deleteTask(MainActivity.this, (int)id);
+				    		WagonTester.deleteTask((int)id);
 				    		requery();
 				    	}
 					})

@@ -1,18 +1,26 @@
-package com.example.wagontester.common;
+package com.example.wagontester;
 
 import java.io.File;
 import java.util.ArrayList;
 
 import com.example.wagontester.db.DBContract;
 
-import android.content.Context;
+import android.app.Application;
 import android.database.Cursor;
 
-public class Utility {
+public class WagonTester extends Application {
 	
-	public static void deleteUnlinkedPhotos(Context context) {
+	private static WagonTester mApp = null;
+	
+	@Override
+	public void onCreate() {
+		super.onCreate();
+		mApp = this;
+	}
+	
+	public static void deleteUnlinkedPhotos() {
 		ArrayList<String> fileInDatabase = new ArrayList<String>();
-		Cursor c = context.getContentResolver().query(DBContract.ContentTable.CONTENT_URI, 
+		Cursor c = mApp.getContentResolver().query(DBContract.ContentTable.CONTENT_URI, 
 				new String[] {DBContract.ContentTable.KEY_IMAGE}, null, null, null);
 		for(c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
 			if (!fileInDatabase.contains(c.getString(0))) {
@@ -20,18 +28,19 @@ public class Utility {
 			}
 		}
 		
-		for(File f : context.getFilesDir().listFiles()) {
+		for(File f : mApp.getFilesDir().listFiles()) {
 			if(!fileInDatabase.contains(f.getAbsolutePath())) {
 				f.delete();
 			}
 		}
 	}
 	
-	public static void deleteTask(Context context, int task_id) {
-		context.getContentResolver().delete(DBContract.TaskTable.CONTENT_URI, 
+	public static void deleteTask(int task_id) {
+		mApp.getContentResolver().delete(DBContract.TaskTable.CONTENT_URI, 
 				"_id=" + String.valueOf(task_id), null);
-		context.getContentResolver().delete(DBContract.ContentTable.CONTENT_URI, 
+		mApp.getContentResolver().delete(DBContract.ContentTable.CONTENT_URI, 
 				DBContract.ContentTable.KEY_TASK + "=" + String.valueOf(task_id), null);
-		deleteUnlinkedPhotos(context);
+		deleteUnlinkedPhotos();
 	}
+	
 }

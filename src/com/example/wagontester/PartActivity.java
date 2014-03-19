@@ -3,7 +3,6 @@ package com.example.wagontester;
 import java.io.File;
 import java.util.ArrayList;
 
-import com.example.wagontester.common.Utility;
 import com.example.wagontester.db.DBContract;
 
 import android.app.Activity;
@@ -132,7 +131,7 @@ public class PartActivity extends Activity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		Utility.deleteUnlinkedPhotos(this);
+		WagonTester.deleteUnlinkedPhotos();
 	}
 	
 	@Override
