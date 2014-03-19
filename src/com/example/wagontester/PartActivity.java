@@ -73,6 +73,7 @@ public class PartActivity extends Activity {
 		c.close();
 		
 		// Set views
+		mDummyView.requestFocus();
 		mDummyView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
