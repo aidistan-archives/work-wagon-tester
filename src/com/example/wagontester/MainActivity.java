@@ -121,7 +121,8 @@ public class MainActivity extends Activity {
 		case R.id.add:
 			intent = new Intent(MainActivity.this, TaskActivity.class);
 			intent.putExtra(TaskActivity.EXTRA_MODE, TaskActivity.MODE_NEW);
-			startActivity(intent);		
+			startActivity(intent);
+			break;
 		case R.id.upload:
 			// Tasks to upload
 			ArrayList<Integer> taskList = new ArrayList<Integer>();
