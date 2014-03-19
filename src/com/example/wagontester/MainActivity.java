@@ -1,9 +1,12 @@
 package com.example.wagontester;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 import com.example.wagontester.R;
@@ -134,12 +137,11 @@ public class MainActivity extends Activity {
 			c.close();
 			
 			// Check
-//			if (taskList.size() == 0) {
-//				Toast.makeText(this, "无需导出", Toast.LENGTH_SHORT).show();
-//				break;
-//			}
-			
-			// TODO: Finish in future
+			if (taskList.size() == 0) {
+				Toast.makeText(this, "无需导出", Toast.LENGTH_SHORT).show();
+				break;
+			}
+					
 			File root = Environment.getExternalStorageDirectory();
 			root = new File(root.toURI().resolve("货车检查仪"));
 			if (!root.exists()) {
@@ -148,26 +150,75 @@ public class MainActivity extends Activity {
 			
 			// Each task
 			for(int task_id : taskList) {
-				File dir = new File(root.toURI().resolve(String.valueOf(task_id)));
-				dir.mkdir();
-				File file = new File(dir.toURI().resolve("任务.txt"));
+				File task_dir = new File(root.toURI().resolve(String.valueOf(task_id)));
+				task_dir.mkdir();
+				File task_file = new File(task_dir.toURI().resolve("任务.txt"));
 
 				try {
-					FileOutputStream fOut = new FileOutputStream(file);
+					FileOutputStream fOut = new FileOutputStream(task_file);
 					
 					// Task
 					c = getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null, 
 							"_id=" + String.valueOf(task_id), null, null);
 					c.moveToFirst();
+					fOut.write("====================\r\n".getBytes());
 					fOut.write(("车号：" + c.getString(DBContract.TaskTable.POS_WAGON) + "\r\n").getBytes());
 					fOut.write(("型号：" + c.getString(DBContract.TaskTable.POS_MODEL) + "\r\n").getBytes());
 					fOut.write(("台号：" + c.getString(DBContract.TaskTable.POS_PLATFORM) + "\r\n").getBytes());
-					fOut.write(("作业者：" + c.getString(DBContract.TaskTable.POS_USER) + "\r\n").getBytes());
-					fOut.write(("岗位：" + c.getString(DBContract.TaskTable.POS_DUTY) + "\r\n").getBytes());
+					
+					Cursor cc = getContentResolver().query(DBContract.UserTable.CONTENT_URI, 
+							null, "_id="+String.valueOf(c.getInt(DBContract.TaskTable.POS_USER)), null, null);
+					cc.moveToFirst();
+					fOut.write(("作业者：" + cc.getString(DBContract.UserTable.POS_NAME) + "\r\n").getBytes());
+					
+					cc = getContentResolver().query(DBContract.DutyTable.CONTENT_URI, 
+							null, "_id="+String.valueOf(c.getInt(DBContract.TaskTable.POS_DUTY)), null, null);
+					cc.moveToFirst();
+					fOut.write(("岗位：" + cc.getString(DBContract.DutyTable.POS_NAME) + "\r\n").getBytes());
+					
 					fOut.write(("日期：" + c.getString(DBContract.TaskTable.POS_DATE) + "\r\n").getBytes());
+					fOut.write("====================\r\n".getBytes());
+					fOut.write("\r\n".getBytes());
 					c.close();
 					
 					// Parts
+					String part, fault, image;
+					String old_path, new_path;
+					c = getContentResolver().query(DBContract.ContentTable.CONTENT_URI, null,
+							DBContract.ContentTable.KEY_TASK + "=" + task_id, null, null);
+					for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+						// Part
+						part = c.getString(DBContract.ContentTable.POS_PART);
+						fOut.write(("部件："+part+"\r\n").getBytes());
+						// Fault
+						fault = c.getString(DBContract.ContentTable.POS_FAULT);
+						if(fault.equals("")) {
+							fault = "良";
+						}
+						fOut.write(("故障："+fault+"\r\n").getBytes());
+						// Image
+						old_path = c.getString(DBContract.ContentTable.POS_IMAGE);
+						if(old_path.equals("")) {
+							image = "无";
+						} else {
+							image = new File(old_path).getName();
+							new_path = task_dir + "/" + image;
+							
+							InputStream is = new FileInputStream(old_path);
+				            OutputStream os = new FileOutputStream(new_path);
+				            byte[] buff=new byte[1024];
+				            int len;
+				            while((len=is.read(buff))>0){
+				                os.write(buff,0,len);
+				            }
+				            is.close();
+				            os.close();
+						}
+						fOut.write(("图片："+image+"\r\n").getBytes());
+						// Change line
+						fOut.write("\r\n".getBytes());
+					}
+					c.close();
 					
 					fOut.flush();
 					fOut.close();
