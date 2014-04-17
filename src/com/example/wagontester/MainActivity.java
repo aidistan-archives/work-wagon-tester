@@ -22,6 +22,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -384,6 +385,15 @@ public class MainActivity extends Activity {
 				mTextView.requestFocus();
 				mSortBySpinner.setNextFocusDownId(R.id.textView);
 				mTextView.setNextFocusUpId(R.id.sortBySpinner);
+				break;
+			}
+			switch(position) {
+			case SORT_BY_MODEL:
+				mTextView.setInputType(InputType.TYPE_CLASS_TEXT);
+				break;
+			case SORT_BY_WAGON:
+			case SORT_BY_PLATFORM:
+				mTextView.setInputType(InputType.TYPE_CLASS_NUMBER);
 				break;
 			}
 		}

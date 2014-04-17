@@ -3,6 +3,7 @@ package com.example.wagontester;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 import android.app.Activity;
@@ -16,7 +17,9 @@ import android.hardware.Camera.PictureCallback;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -70,13 +73,28 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
 		}
 	}
 
-		
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		switch (mStatus) {
+		case IS_ON_PREVIEW:
+			mStatus = IS_TAKING_PHOTO;
+			mProgressBar.setVisibility(View.VISIBLE);
+			mCamera.takePicture(null, null, PhotoActivity.this);
+			return true;
+		case IS_ON_POSTVIEW:
+			new SaveImageTask().execute(0);
+			return true;
+		}
+		return super.onTouchEvent(event);
+	}
+	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (mStatus) {
 		case IS_ON_PREVIEW:
+			Log.v("aidi", String.valueOf(keyCode));
 			switch (keyCode) {
-			case KeyEvent.KEYCODE_SYSRQ: // SCAN键
+			case KeyEvent.KEYCODE_SEARCH: // SCAN键
 				mStatus = IS_AUTO_FOCUSING;
 				Toast.makeText(this, "自动对焦中...", Toast.LENGTH_SHORT).show();
 				mCamera.autoFocus(new Camera.AutoFocusCallback() {
@@ -92,7 +110,7 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
 				setResult(RESULT_CANCELED);
 				finish();
 				break;
-			case KeyEvent.KEYCODE_ENTER:
+			case KeyEvent.KEYCODE_MENU:
 				mStatus = IS_TAKING_PHOTO;
 				mProgressBar.setVisibility(View.VISIBLE);
 				mCamera.takePicture(null, null, PhotoActivity.this);
@@ -109,7 +127,7 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
             	mCamera.startPreview();
             	mStatus = IS_ON_PREVIEW;
 				break;
-			case KeyEvent.KEYCODE_ENTER:
+			case KeyEvent.KEYCODE_MENU:
 				new SaveImageTask().execute(0);
 				break;
 			}
@@ -140,10 +158,16 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
 
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+		List<Camera.Size> sizes;
+		
 		Camera.Parameters parameters = mCamera.getParameters();
-		parameters.setPreviewSize(640, 480); // Largest
-		parameters.setPictureFormat(ImageFormat.JPEG); // Only supporting JPEG
-		parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO); // Best by now
+		sizes = parameters.getSupportedPictureSizes();
+		parameters.setPictureSize(sizes.get(0).width, sizes.get(0).height);
+		sizes = parameters.getSupportedPreviewSizes();
+		parameters.setPreviewSize(sizes.get(0).width, sizes.get(0).height);
+		parameters.setPictureFormat(ImageFormat.JPEG);
+		parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+		parameters.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
 		mCamera.setParameters(parameters);
 		mCamera.setDisplayOrientation(90);
 		mCamera.startPreview();
