@@ -1,0 +1,10 @@
+<resources>
+    <dimen name="text_xsmall">12sp</dimen>
+    <dimen name="text_small">14sp</dimen>
+    <dimen name="text_middle">16sp</dimen>
+    <dimen name="text_large">20sp</dimen>
+    <dimen name="text_xlarge">30sp</dimen>
+    <dimen name="text_xxlarge">45sp</dimen>
+    <dimen name="text_huge">60sp</dimen>
+        
+</resources>

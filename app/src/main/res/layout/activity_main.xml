@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:layout_width="match_parent"
+        layout="@layout/include_bg" />
+   
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="#aa000000">
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+        	android:layout_height="wrap_content"
+        	android:orientation="horizontal">
+        	
+	        <Spinner
+	            android:id="@+id/sortBySpinner"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="3"
+	            android:focusableInTouchMode="true"/>
+	        
+	        <Spinner
+	            android:id="@+id/spinner"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="2"/>
+		        
+		    <AutoCompleteTextView
+		        android:id="@+id/textView"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="2"
+		        
+		        android:ems="10"
+		        android:singleLine="true"
+		        
+		        android:hint="在此检索"
+				android:textSize="14sp"
+				android:completionThreshold="1"/>
+	
+	    </LinearLayout>
+	    
+	    <ListView
+	        android:id="@+id/listView"
+	        android:layout_width="match_parent"
+	        android:layout_height="0dp"
+	        android:layout_weight="1" 
+	        android:listSelector="@drawable/selector_tasklist"/>
+    </LinearLayout>
+
+</FrameLayout>
