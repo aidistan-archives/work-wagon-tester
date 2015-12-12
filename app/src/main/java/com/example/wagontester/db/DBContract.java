@@ -4,7 +4,7 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 
 /*
- * 契约文件
+ * 濂戠害鏂囦欢
  */
 public class DBContract {
 	public static final int VERSION = 7;
@@ -14,21 +14,21 @@ public class DBContract {
 	
 	private static final String PROTOCOL = "content://";
 	
-	public static final int URI_USER = 1; // 用户
+	public static final int URI_USER = 1; // 鐢ㄦ埛
 	public static final int URI_USER_ITEM = 2;
 	
-	public static final int URI_DUTY = 3; // 职责
+	public static final int URI_DUTY = 3; // 鑱岃矗
 	public static final int URI_DUTY_ITEM = 4;
-	public static final int URI_PART = 5; // 部件
+	public static final int URI_PART = 5; // 閮ㄤ欢
 	public static final int URI_PART_ITEM = 6;
-	public static final int URI_FAULT = 7; // 故障
+	public static final int URI_FAULT = 7; // 鏁呴殰
 	public static final int URI_FAULT_ITEM = 8;
 	
-	public static final int URI_MODEL = 9; // 车辆
+	public static final int URI_MODEL = 9; // 杞﹁締
 	public static final int URI_MODEL_ITEM = 10;
-	public static final int URI_TASK = 11; // 任务
+	public static final int URI_TASK = 11; // 浠诲姟
 	public static final int URI_TASK_ITEM = 12;
-	public static final int URI_CONTENT = 13; // 内容
+	public static final int URI_CONTENT = 13; // 鍐呭
 	public static final int URI_CONTENT_ITEM = 14;
 		
 	public static final String TYPE_USER = "vnd.android.cursor.dir/com.example.wagontester.db.user"; 

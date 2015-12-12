@@ -184,13 +184,13 @@ public class TaskActivity extends Activity {
 				break;
 			case R.id.save:
 				if (mWagonEdit.getText().toString().isEmpty()) {
-					Toast.makeText(this, "Î´ÌîĞ´³µºÅ", Toast.LENGTH_LONG).show();
+					Toast.makeText(this, "æœªå¡«å†™è½¦å·", Toast.LENGTH_LONG).show();
 				} else if (mModelEdit.getText().toString().isEmpty()) {
-					Toast.makeText(this, "Î´ÌîĞ´ĞÍºÅ", Toast.LENGTH_LONG).show();
+					Toast.makeText(this, "æœªå¡«å†™å‹å·", Toast.LENGTH_LONG).show();
 				} else if (mPlatformEdit.getText().toString().isEmpty()) {
-					Toast.makeText(this, "Î´ÌîĞ´Ì¨ºÅ", Toast.LENGTH_LONG).show();
+					Toast.makeText(this, "æœªå¡«å†™å°å·", Toast.LENGTH_LONG).show();
 				} else if (mArrayList.isEmpty()) {
-					Toast.makeText(this, "Î´Ìí¼Ó²¿¼ş", Toast.LENGTH_LONG).show();
+					Toast.makeText(this, "æœªæ·»åŠ éƒ¨ä»¶", Toast.LENGTH_LONG).show();
 				} else {
 					ContentValues cv_task = new ContentValues();
 					cv_task.put(DBContract.TaskTable.KEY_DUTY, mSpApp.getInt("Duty", 0));
@@ -257,7 +257,7 @@ public class TaskActivity extends Activity {
 			}
 
 			if (position == mArrayList.size()) {
-				view.setText("Ìí¼Ó²¿¼ş");
+				view.setText("æ·»åŠ éƒ¨ä»¶");
 				view.setTextColor(getResources().getColor(R.color.metro_gray));
 			} else {
 				view.setText(mArrayList.get(position));
@@ -277,9 +277,9 @@ public class TaskActivity extends Activity {
 				}
 				
 				new AlertDialog.Builder(TaskActivity.this)
-						.setTitle("²¿¼şÃû³Æ")
+						.setTitle("éƒ¨ä»¶åç§°")
 						.setView(editText)
-						.setPositiveButton("È·¶¨", new DialogInterface.OnClickListener() {
+						.setPositiveButton("ç¡®å®š", new DialogInterface.OnClickListener() {
 							
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
@@ -308,15 +308,15 @@ public class TaskActivity extends Activity {
 			}
 			
 			new AlertDialog.Builder(TaskActivity.this)
-					.setTitle("É¾³ı²¿¼ş")
-				    .setPositiveButton("È·¶¨", new DialogInterface.OnClickListener() {
+					.setTitle("åˆ é™¤éƒ¨ä»¶")
+				    .setPositiveButton("ç¡®å®š", new DialogInterface.OnClickListener() {
 				    	@Override
 				    	public void onClick(DialogInterface dialog, int which) {
 				    		mArrayList.remove(position);
 				    		mListHelper.notifyDataSetChanged();
 				    	}
 					})
-					.setNegativeButton("È¡Ïû", null)
+					.setNegativeButton("å–æ¶ˆ", null)
 					.show();
 			return true;
 		}

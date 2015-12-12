@@ -71,9 +71,9 @@ public class LoginActivity extends Activity {
 		int duty = (int)mDutySpinner.getSelectedItemId();
 		
 		if(user == AdapterView.INVALID_POSITION) {
-			showDialog("请选择用户");
+			showDialog("璇烽�夋嫨鐢ㄦ埛");
 		} else if (duty == AdapterView.INVALID_POSITION) {
-			showDialog("请选择岗位");
+			showDialog("璇烽�夋嫨宀椾綅");
 		} else {			
 			SharedPreferences.Editor editor = mSpApp.edit();
 			editor.putInt("User", user);
@@ -90,7 +90,7 @@ public class LoginActivity extends Activity {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage(msg)
 		       .setCancelable(false)
-		       .setPositiveButton("确定", null)
+		       .setPositiveButton("纭畾", null)
 			   .show();
 	}
 }

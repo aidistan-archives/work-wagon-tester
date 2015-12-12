@@ -39,7 +39,7 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	
-	private static final String[] SORT_BY_OPTIONS = {"È«²¿", "°´×÷ÒµÕß", "°´³µĞÍ", "°´³µºÅ", "°´Ì¨Î»", "°´ÈÕÆÚ", "°´¸ÚÎ»"};
+	private static final String[] SORT_BY_OPTIONS = {"å…¨éƒ¨", "æŒ‰ä½œä¸šè€…", "æŒ‰è½¦å‹", "æŒ‰è½¦å·", "æŒ‰å°ä½", "æŒ‰æ—¥æœŸ", "æŒ‰å²—ä½"};
 	private static final int SORT_BY_ALL = 0;
 	private static final int SORT_BY_USER = 1;
 	private static final int SORT_BY_DUTY = 6;
@@ -139,12 +139,12 @@ public class MainActivity extends Activity {
 			
 			// Check
 			if (taskList.size() == 0) {
-				Toast.makeText(this, "ÎŞĞèµ¼³ö", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, "æ— éœ€å¯¼å‡º", Toast.LENGTH_SHORT).show();
 				break;
 			}
 					
 			File root = Environment.getExternalStorageDirectory();
-			root = new File(root.toURI().resolve("»õ³µ¼ì²éÒÇ"));
+			root = new File(root.toURI().resolve("è´§è½¦æ£€æŸ¥ä»ª"));
 			if (!root.exists()) {
 				root.mkdir();
 			}
@@ -153,7 +153,7 @@ public class MainActivity extends Activity {
 			for(int task_id : taskList) {
 				File task_dir = new File(root.toURI().resolve(String.valueOf(task_id)));
 				task_dir.mkdir();
-				File task_file = new File(task_dir.toURI().resolve("ÈÎÎñ.txt"));
+				File task_file = new File(task_dir.toURI().resolve("ä»»åŠ¡.txt"));
 
 				try {
 					FileOutputStream fOut = new FileOutputStream(task_file);
@@ -163,21 +163,21 @@ public class MainActivity extends Activity {
 							"_id=" + String.valueOf(task_id), null, null);
 					c.moveToFirst();
 					fOut.write("====================\r\n".getBytes());
-					fOut.write(("³µºÅ£º" + c.getString(DBContract.TaskTable.POS_WAGON) + "\r\n").getBytes());
-					fOut.write(("ĞÍºÅ£º" + c.getString(DBContract.TaskTable.POS_MODEL) + "\r\n").getBytes());
-					fOut.write(("Ì¨ºÅ£º" + c.getString(DBContract.TaskTable.POS_PLATFORM) + "\r\n").getBytes());
+					fOut.write(("è½¦å·ï¼š" + c.getString(DBContract.TaskTable.POS_WAGON) + "\r\n").getBytes());
+					fOut.write(("å‹å·ï¼š" + c.getString(DBContract.TaskTable.POS_MODEL) + "\r\n").getBytes());
+					fOut.write(("å°å·ï¼š" + c.getString(DBContract.TaskTable.POS_PLATFORM) + "\r\n").getBytes());
 					
 					Cursor cc = getContentResolver().query(DBContract.UserTable.CONTENT_URI, 
 							null, "_id="+String.valueOf(c.getInt(DBContract.TaskTable.POS_USER)), null, null);
 					cc.moveToFirst();
-					fOut.write(("×÷ÒµÕß£º" + cc.getString(DBContract.UserTable.POS_NAME) + "\r\n").getBytes());
+					fOut.write(("ä½œä¸šè€…ï¼š" + cc.getString(DBContract.UserTable.POS_NAME) + "\r\n").getBytes());
 					
 					cc = getContentResolver().query(DBContract.DutyTable.CONTENT_URI, 
 							null, "_id="+String.valueOf(c.getInt(DBContract.TaskTable.POS_DUTY)), null, null);
 					cc.moveToFirst();
-					fOut.write(("¸ÚÎ»£º" + cc.getString(DBContract.DutyTable.POS_NAME) + "\r\n").getBytes());
+					fOut.write(("å²—ä½ï¼š" + cc.getString(DBContract.DutyTable.POS_NAME) + "\r\n").getBytes());
 					
-					fOut.write(("ÈÕÆÚ£º" + c.getString(DBContract.TaskTable.POS_DATE) + "\r\n").getBytes());
+					fOut.write(("æ—¥æœŸï¼š" + c.getString(DBContract.TaskTable.POS_DATE) + "\r\n").getBytes());
 					fOut.write("====================\r\n".getBytes());
 					fOut.write("\r\n".getBytes());
 					c.close();
@@ -190,17 +190,17 @@ public class MainActivity extends Activity {
 					for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
 						// Part
 						part = c.getString(DBContract.ContentTable.POS_PART);
-						fOut.write(("²¿¼ş£º"+part+"\r\n").getBytes());
+						fOut.write(("éƒ¨ä»¶ï¼š"+part+"\r\n").getBytes());
 						// Fault
 						fault = c.getString(DBContract.ContentTable.POS_FAULT);
 						if(fault.equals("")) {
-							fault = "Á¼";
+							fault = "è‰¯";
 						}
-						fOut.write(("¹ÊÕÏ£º"+fault+"\r\n").getBytes());
+						fOut.write(("æ•…éšœï¼š"+fault+"\r\n").getBytes());
 						// Image
 						old_path = c.getString(DBContract.ContentTable.POS_IMAGE);
 						if(old_path.equals("")) {
-							image = "ÎŞ";
+							image = "æ— ";
 						} else {
 							image = new File(old_path).getName();
 							new_path = task_dir + "/" + image;
@@ -215,7 +215,7 @@ public class MainActivity extends Activity {
 				            is.close();
 				            os.close();
 						}
-						fOut.write(("Í¼Æ¬£º"+image+"\r\n").getBytes());
+						fOut.write(("å›¾ç‰‡ï¼š"+image+"\r\n").getBytes());
 						// Change line
 						fOut.write("\r\n".getBytes());
 					}
@@ -233,7 +233,7 @@ public class MainActivity extends Activity {
 			}
 			
 			// In the end
-			Toast.makeText(this, "µ¼³öÍê³É", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, "å¯¼å‡ºå®Œæˆ", Toast.LENGTH_SHORT).show();
 			mListHelper.requery();
 			break;
 		case R.id.change:
@@ -494,15 +494,15 @@ public class MainActivity extends Activity {
 		@Override
 		public boolean onItemLongClick(AdapterView<?> parent, View view, int position, final long id) {
 			new AlertDialog.Builder(MainActivity.this)
-					.setTitle("É¾³ıÈÎÎñ£º")
-				    .setPositiveButton("È·¶¨", new DialogInterface.OnClickListener() {
+					.setTitle("åˆ é™¤ä»»åŠ¡ï¼š")
+				    .setPositiveButton("ç¡®å®š", new DialogInterface.OnClickListener() {
 				    	@Override
 				    	public void onClick(DialogInterface dialog, int which) {
 				    		WagonTester.deleteTask((int)id);
 				    		requery();
 				    	}
 					})
-					.setNegativeButton("È¡Ïû", null)
+					.setNegativeButton("å–æ¶ˆ", null)
 					.show();
 			return true;
 		}

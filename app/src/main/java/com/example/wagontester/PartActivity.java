@@ -145,7 +145,7 @@ public class PartActivity extends Activity {
 		switch (item.getItemId()) {
 		case R.id.save:
 			if (!mToggleButton.isChecked() && mFault.equals("")) {
-				Toast.makeText(this, "ÇëÑ¡Ôñ", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, "è¯·é€‰æ‹©", Toast.LENGTH_SHORT).show();
 				return true;
 			}
 			
@@ -274,11 +274,11 @@ public class PartActivity extends Activity {
 			view.setTextColor(getResources().getColor(R.color.metro_black));
 			
 			if (position == 0) {
-				view.setText("ÇëÑ¡Ôñ");
+				view.setText("è¯·é€‰æ‹©");
 			} else if (isCustom() && position == getCount()-2) {
 				view.setText(mFault);
 			} else if (position == getCount()-1) {
-				view.setText("×Ô¶¨Òå");
+				view.setText("è‡ªå®šä¹‰");
 			} else {
 				view.setText(mArrayList.get(position-1));
 			}
@@ -287,7 +287,7 @@ public class PartActivity extends Activity {
 
 		@Override
 		public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-			// ×Ô¶¨Òå
+			// è‡ªå®šä¹‰
 			
 			if (position == 0) {
 				mFault = "";
@@ -299,9 +299,9 @@ public class PartActivity extends Activity {
 					editText.setText(mFault);
 				}
 				new AlertDialog.Builder(PartActivity.this)
-						.setTitle("×Ô¶¨Òå")
+						.setTitle("è‡ªå®šä¹‰")
 						.setView(editText)
-						.setPositiveButton("È·¶¨", new DialogInterface.OnClickListener() {
+						.setPositiveButton("ç¡®å®š", new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
 								mFault = editText.getText().toString();

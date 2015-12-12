@@ -94,13 +94,13 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
 		case IS_ON_PREVIEW:
 			Log.v("aidi", String.valueOf(keyCode));
 			switch (keyCode) {
-			case KeyEvent.KEYCODE_SEARCH: // SCAN¼ü
+			case KeyEvent.KEYCODE_SEARCH: // SCANé”®
 				mStatus = IS_AUTO_FOCUSING;
-				Toast.makeText(this, "×Ô¶¯¶Ô½¹ÖĞ...", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, "è‡ªåŠ¨å¯¹ç„¦ä¸­...", Toast.LENGTH_SHORT).show();
 				mCamera.autoFocus(new Camera.AutoFocusCallback() {
 					@Override
 					public void onAutoFocus(boolean success, Camera camera) {
-						Toast.makeText(PhotoActivity.this, "¶Ô½¹ÒÑÍê³É", Toast.LENGTH_SHORT).show();
+						Toast.makeText(PhotoActivity.this, "å¯¹ç„¦å·²å®Œæˆ", Toast.LENGTH_SHORT).show();
 						mStatus = IS_ON_PREVIEW;
 					}
 				});
@@ -207,7 +207,7 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
 				fOut.close();
 			} catch (IOException e) {
 				e.printStackTrace();
-				Toast.makeText(PhotoActivity.this, "Í¼Æ¬±£´æ³ö´í...", Toast.LENGTH_SHORT).show();
+				Toast.makeText(PhotoActivity.this, "å›¾ç‰‡ä¿å­˜å‡ºé”™...", Toast.LENGTH_SHORT).show();
 				return null;
 			}
 			

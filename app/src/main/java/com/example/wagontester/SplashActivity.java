@@ -28,14 +28,14 @@ public class SplashActivity extends Activity{
 		super.onCreate(savedInstanceBundle);
         setContentView(R.layout.activity_splash);
 
-        // Ô¤ÖÃÊı¾İ
+        // é¢„ç½®æ•°æ®
 		mSpApp = getSharedPreferences("app", MODE_PRIVATE);
 		if(!mSpApp.contains(DEFAULT_KEY_VERSION) || 
 			mSpApp.getInt(DEFAULT_KEY_VERSION, 0)!=DBHelper.getDatabaseVersion()) {
 			preset();
 		}
 		
-		// ·âÃæÍ¼Æ¬
+		// å°é¢å›¾ç‰‡
 		new Handler().postDelayed(new Runnable() { // Redirecting
 			@Override
 			public void run() {
