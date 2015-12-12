@@ -10,16 +10,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class TaskView extends LinearLayout {
-	
+
 	// Views
 	public ImageView imageView;
 	public TextView wagonView, userView, dutyView, modelView, platformView, dateView;
-	
+
 	public TaskView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		if (isInEditMode()) { return; }
 		LayoutInflater.from(getContext()).inflate(R.layout.view_task, this);
-				
+
 		imageView = (ImageView)findViewById(R.id.imageView);
 		wagonView = (TextView)findViewById(R.id.wagonView);
 		userView = (TextView)findViewById(R.id.userView);

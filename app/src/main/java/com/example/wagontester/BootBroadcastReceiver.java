@@ -18,7 +18,7 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
 			KeyguardManager mKeyguard = (KeyguardManager)context.getSystemService(Context.KEYGUARD_SERVICE);
 			KeyguardManager.KeyguardLock mKeylock = mKeyguard.newKeyguardLock("");
             mKeylock.disableKeyguard();
-            
+
 			//Load main entry
 			Intent startIntent = new Intent(context, SplashActivity.class);
 			startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

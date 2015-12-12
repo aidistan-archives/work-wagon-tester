@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="10dp">
-    
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
@@ -22,7 +22,7 @@
 		android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:gravity="center">
-        
+
        	<ToggleButton
 	        android:id="@+id/toggleButton"
 	        android:layout_width="wrap_content"
@@ -30,14 +30,14 @@
 	        android:textOn="良"
 	        android:textOff="劣"/>
 
-        <Spinner 
+        <Spinner
             android:id="@+id/spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />
 
     </LinearLayout>
-	
+
 	<FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -46,15 +46,15 @@
         android:layout_above="@id/linearLayout"
         android:layout_marginBottom="10dp"
 	    >
-	   	<ImageView
-	        android:id="@+id/photo" 
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:scaleType="fitCenter"
-	        android:src="@drawable/shape_missingphoto"/>
-	   	
+        <ImageView
+            android:id="@+id/photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="fitCenter"
+            android:src="@drawable/shape_missingphoto"/>
+
 		<ImageView
-	        android:id="@+id/dummyPhoto" 
+	        android:id="@+id/dummyPhoto"
 	        android:layout_width="wrap_content"
 	        android:layout_height="match_parent"
 	        android:scaleType="fitCenter"

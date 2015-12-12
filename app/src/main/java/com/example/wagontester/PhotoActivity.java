@@ -28,7 +28,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 public class PhotoActivity extends Activity implements SurfaceHolder.Callback, PictureCallback{
-	
+
 	public static final String EXTRA = "com.example.wagontester.photo_activity.image_path";
 
 	private static final int IS_INVALID = -1;
@@ -37,37 +37,37 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
 	private static final int IS_TAKING_PHOTO = 2;
 	private static final int IS_ON_POSTVIEW = 3;
 	private static final int IS_SAVING_PHOTO = 4;
-	
+
 	private int mStatus = IS_INVALID;
-	
+
 	private Camera mCamera;
 	private Bitmap mBitmap = null;
-	
+
 	private SurfaceView mSurfaceView;
 	private SurfaceHolder mSurfaceHolder;
 	private ImageView mPostView;
 	private ProgressBar mProgressBar;
-	
-	@SuppressWarnings("deprecation") 
+
+	@SuppressWarnings("deprecation")
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_photo);
-		
+
 		mSurfaceView = (SurfaceView)findViewById(R.id.surfaceView);
 		mSurfaceHolder = mSurfaceView.getHolder();
 		mSurfaceHolder.addCallback(this);
-		mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS); 
-			// This method was deprecated in API level 11. 
+		mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+			// This method was deprecated in API level 11.
 			// this is ignored, this value is set automatically when needed.
 		mPostView = (ImageView)findViewById(R.id.imageView);
 		mProgressBar = (ProgressBar)findViewById(R.id.progressBar);
 		mProgressBar.setVisibility(View.GONE);
 	}
-	
+
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		
+
 		if (mBitmap != null) {
 			mBitmap.recycle();
 		}
@@ -87,7 +87,7 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
 		}
 		return super.onTouchEvent(event);
 	}
-	
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (mStatus) {
@@ -138,20 +138,20 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
 
 	@Override
 	public void onPictureTaken(byte[] data, Camera camera) {
-		
+
 		// Get the original photo
 		BitmapFactory.Options options = new BitmapFactory.Options();
         Bitmap photo = BitmapFactory.decodeByteArray(data,0,data.length,options);
-        
+
         // Rotate
         Matrix matrix = new Matrix();
         matrix.postRotate(90);
-        mBitmap = Bitmap.createBitmap(photo, 0, 0, photo.getWidth(), photo.getHeight(), matrix, true); 
-        
+        mBitmap = Bitmap.createBitmap(photo, 0, 0, photo.getWidth(), photo.getHeight(), matrix, true);
+
         // Post view
         mPostView.setImageBitmap(mBitmap);
         mPostView.setVisibility(View.VISIBLE);
-        
+
         mProgressBar.setVisibility(View.INVISIBLE);
         mStatus = IS_ON_POSTVIEW;
 	}
@@ -159,24 +159,34 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 		List<Camera.Size> sizes;
-		
 		Camera.Parameters parameters = mCamera.getParameters();
-		sizes = parameters.getSupportedPictureSizes();
-		parameters.setPictureSize(sizes.get(0).width, sizes.get(0).height);
+
+//		// Check support sizes
+//		for (Camera.Size size: parameters.getSupportedPictureSizes()) {
+//			Log.v("aidistan", "width: " + size.width + " height: " + size.height);
+//		}
+//		for (Camera.Size size: parameters.getSupportedPreviewSizes()) {
+//			Log.v("aidistan", "width: " + size.width + " height: " + size.height);
+//		}
+
+		// Set sample sizes
 		sizes = parameters.getSupportedPreviewSizes();
-		parameters.setPreviewSize(sizes.get(0).width, sizes.get(0).height);
+		parameters.setPreviewSize(sizes.get(sizes.size() - 1).width, sizes.get(sizes.size() - 1).height);
+//		sizes = parameters.getSupportedPictureSizes();
+		parameters.setPictureSize(sizes.get(sizes.size() - 1).width, sizes.get(sizes.size() - 1).height);
+
 		parameters.setPictureFormat(ImageFormat.JPEG);
-		parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
-		parameters.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+//		parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+//		parameters.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
 		mCamera.setParameters(parameters);
-		mCamera.setDisplayOrientation(90);
+		mCamera.setDisplayOrientation(270);
 		mCamera.startPreview();
 		mStatus = IS_ON_PREVIEW;
 	}
 
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
-		mCamera = Camera.open();
+		mCamera = Camera.open(1);
 
 		try {
 			mCamera.setPreviewDisplay(holder);
@@ -196,13 +206,13 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
 
 		@Override
 		protected String doInBackground(Integer... arg0) {
-			String filename = getFilesDir().getPath() + "/photo_" + 
+			String filename = getFilesDir().getPath() + "/photo_" +
 	                  DateFormat.format("yyyyMMdd_hhmmss",Calendar.getInstance(Locale.CHINA)) + ".jpg";
-			
+
 			try {
 				FileOutputStream fOut = new FileOutputStream(filename);
 				mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
-				
+
 				fOut.flush();
 				fOut.close();
 			} catch (IOException e) {
@@ -210,21 +220,21 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
 				Toast.makeText(PhotoActivity.this, "图片保存出错...", Toast.LENGTH_SHORT).show();
 				return null;
 			}
-			
+
 			return filename;
 		}
-		
+
 		@Override
 		public void onPreExecute() {
 			mProgressBar.setVisibility(View.VISIBLE);
 			mStatus = IS_SAVING_PHOTO;
 		}
-		
+
 		@Override
 		public void onPostExecute(String filename) {
 			mProgressBar.setVisibility(View.INVISIBLE);
 			mStatus = IS_INVALID;
-			
+
 			if(filename != null) {
 				setResult(RESULT_OK, new Intent().putExtra(EXTRA , filename));
 				finish();
@@ -232,4 +242,3 @@ public class PhotoActivity extends Activity implements SurfaceHolder.Callback, P
 		}
 	}
 }
-

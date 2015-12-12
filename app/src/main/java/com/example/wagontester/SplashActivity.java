@@ -13,7 +13,7 @@ import com.example.wagontester.db.DBPresetter;
 public class SplashActivity extends Activity{
 
 	private static final long  SPLASH_DELAY_MILLIS = 1500;
-	
+
 	private static final String DEFAULT_KEY_VERSION = "Version";
 	private static final String DEFAULT_KEY_HOSTIP = "HostIP";
 	private static final String DEFAULT_KEY_ROOTPWD = "RootPwd";
@@ -30,11 +30,11 @@ public class SplashActivity extends Activity{
 
         // 预置数据
 		mSpApp = getSharedPreferences("app", MODE_PRIVATE);
-		if(!mSpApp.contains(DEFAULT_KEY_VERSION) || 
+		if(!mSpApp.contains(DEFAULT_KEY_VERSION) ||
 			mSpApp.getInt(DEFAULT_KEY_VERSION, 0)!=DBHelper.getDatabaseVersion()) {
 			preset();
 		}
-		
+
 		// 封面图片
 		new Handler().postDelayed(new Runnable() { // Redirecting
 			@Override
@@ -43,10 +43,10 @@ public class SplashActivity extends Activity{
 				Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
 				startActivity(intent);
 				finish();
-			} 
+			}
 		}, SPLASH_DELAY_MILLIS);
 	}
-	
+
 	private void preset() {
 		SharedPreferences.Editor editor = mSpApp.edit();
 		editor.putInt(DEFAULT_KEY_VERSION, DBHelper.getDatabaseVersion());
@@ -58,4 +58,3 @@ public class SplashActivity extends Activity{
 		DBPresetter.preset(getContentResolver());
 	}
 }
-

@@ -30,10 +30,10 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 public class PartActivity extends Activity {
-	
+
 	public static final String EXTRA_TASK = "com.example.wagontester.task_activity.task_id";
 	public static final String EXTRA_PART = "com.example.wagontester.task_activity.part_name";
-	
+
 	// Views
 	private TextView mTextView;
 	private ImageView mPhotoView, mDummyView;
@@ -48,29 +48,29 @@ public class PartActivity extends Activity {
 	private Bitmap mBitmap = null;
 	private ArrayList<String> mArrayList = new ArrayList<String>();
 	private SpinnerHelper mSpinnerHelper;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_part);
-		
+
 		mTaskID = getIntent().getExtras().getInt(EXTRA_TASK);
 		mPartName = getIntent().getExtras().getString(EXTRA_PART);
-		
+
 		mTextView = (TextView)findViewById(R.id.textView);
 		mPhotoView = (ImageView)findViewById(R.id.photo);
 		mDummyView = (ImageView)findViewById(R.id.dummyPhoto);
 		mToggleButton = (ToggleButton)findViewById(R.id.toggleButton);
 		mSpinner = (Spinner)findViewById(R.id.spinner);
-		
+
 		// Load preseted faults for this part
-		Cursor c = getContentResolver().query(DBContract.FaultTable.CONTENT_URI, null, 
+		Cursor c = getContentResolver().query(DBContract.FaultTable.CONTENT_URI, null,
 				DBContract.FaultTable.KEY_PART + "=?", new String[] {mPartName}, null);
 		for(c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
 			mArrayList.add(c.getString(DBContract.FaultTable.POS_NAME));
 		}
 		c.close();
-		
+
 		// Set views
 		mDummyView.requestFocus();
 		mDummyView.setOnClickListener(new View.OnClickListener() {
@@ -79,9 +79,9 @@ public class PartActivity extends Activity {
 				startActivityForResult(new Intent(PartActivity.this, PhotoActivity.class), 0);
 			}
 		});
-		
+
 		mToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			
+
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				if(isChecked) {
@@ -98,28 +98,28 @@ public class PartActivity extends Activity {
 				}
 			}
 		});
-		
+
 		mSpinnerHelper = new SpinnerHelper();
 		mSpinner.setAdapter(mSpinnerHelper);
 		mSpinner.setOnItemSelectedListener(mSpinnerHelper);
-		
+
 		// Update views
 		mTextView.setText(mPartName);
 		reload();
 	}
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();
-		
+
 		// Reload
 		setViews();
 	}
-	
+
 	@Override
 	public void onPause() {
 		super.onPause();
-		
+
 		// Release
 		mPhotoView.setImageDrawable(null);
 		if (mBitmap != null) {
@@ -127,19 +127,19 @@ public class PartActivity extends Activity {
 			mBitmap = null;
 		}
 	}
-	
+
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		WagonTester.deleteUnlinkedPhotos();
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		new MenuInflater(this).inflate(R.menu.activity_part, menu);
 		return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
 		switch (item.getItemId()) {
@@ -148,12 +148,12 @@ public class PartActivity extends Activity {
 				Toast.makeText(this, "请选择", Toast.LENGTH_SHORT).show();
 				return true;
 			}
-			
+
 			ContentValues cv = new ContentValues();
 			cv.put(DBContract.ContentTable.KEY_IMAGE, mImagePath);
 			cv.put(DBContract.ContentTable.KEY_FAULT, mFault);
-			getContentResolver().update(DBContract.ContentTable.CONTENT_URI, cv, 
-					DBContract.ContentTable.KEY_TASK + "=" + String.valueOf(mTaskID) + " AND " + DBContract.ContentTable.KEY_PART + "=?", 
+			getContentResolver().update(DBContract.ContentTable.CONTENT_URI, cv,
+					DBContract.ContentTable.KEY_TASK + "=" + String.valueOf(mTaskID) + " AND " + DBContract.ContentTable.KEY_PART + "=?",
 					new String[] {mPartName});
 			this.finish();
 			break;
@@ -169,27 +169,27 @@ public class PartActivity extends Activity {
 		}
 		return true;
 	}
-	
+
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		
+
 		if (resultCode == RESULT_OK) {
 			mImagePath = data.getExtras().getString(PhotoActivity.EXTRA);
 			// onResume will show the picture
 		}
 	}
-	
+
 	private void reload() {
-		Cursor c = getContentResolver().query(DBContract.ContentTable.CONTENT_URI, null, 
-				DBContract.ContentTable.KEY_TASK + "=" + String.valueOf(mTaskID) + " AND " + DBContract.ContentTable.KEY_PART + "=?", 
+		Cursor c = getContentResolver().query(DBContract.ContentTable.CONTENT_URI, null,
+				DBContract.ContentTable.KEY_TASK + "=" + String.valueOf(mTaskID) + " AND " + DBContract.ContentTable.KEY_PART + "=?",
 				new String[] {mPartName}, null);
 		c.moveToFirst();
 		mFault = c.getString(DBContract.ContentTable.POS_FAULT);
 		mImagePath = c.getString(DBContract.ContentTable.POS_IMAGE);
 		c.close();
 	}
-	
+
 	private void setViews() {
 		// Fault
 		if (mFault.equals("")) {
@@ -198,41 +198,41 @@ public class PartActivity extends Activity {
 			mToggleButton.setChecked(false);
 			mSpinnerHelper.update();
 		}
-		
+
 		// Image
 		loadImage();
 	}
-	
+
 	private void loadImage() {
 		loadImage(mImagePath);
 	}
-	
+
 	private void loadImage(String path) {
 		mImagePath = path;
-		
+
 		// Release
 		mPhotoView.setImageDrawable(null);
 		if (mBitmap != null) {
 			mBitmap.recycle();
 			mBitmap = null;
 		}
-		
+
 		// Check
 		if (mImagePath.equals("")) {
 			return;
 		}
-		
+
 		File imgFile = new File(mImagePath);
 		mBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
 	    mPhotoView.setImageBitmap(mBitmap);
 	}
-	
+
 	private class SpinnerHelper extends BaseAdapter implements AdapterView.OnItemSelectedListener {
 
 		private boolean isCustom() {
 			return !mFault.equals("") && !mArrayList.contains(mFault);
 		}
-		
+
 		public void update() {
 			if (mFault.equals("")) {
 				mSpinner.setSelection(0);
@@ -243,7 +243,7 @@ public class PartActivity extends Activity {
 			}
 			mSpinnerHelper.notifyDataSetChanged();
 		}
-		
+
 		@Override
 		public int getCount() {
 			int count = 2 + mArrayList.size();
@@ -258,7 +258,7 @@ public class PartActivity extends Activity {
 		 * Please use mFault instead.
 		 */
 		public Object getItem(int position) { return null; }
-		
+
 		@Override
 		public long getItemId(int position) { return 0; }
 
@@ -272,7 +272,7 @@ public class PartActivity extends Activity {
 			}
 			view.setTextSize(16);
 			view.setTextColor(getResources().getColor(R.color.metro_black));
-			
+
 			if (position == 0) {
 				view.setText("请选择");
 			} else if (isCustom() && position == getCount()-2) {
@@ -288,7 +288,7 @@ public class PartActivity extends Activity {
 		@Override
 		public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 			// 自定义
-			
+
 			if (position == 0) {
 				mFault = "";
 			} else if (isCustom() && position == getCount()-2) {
@@ -324,6 +324,6 @@ public class PartActivity extends Activity {
 		public void onNothingSelected(AdapterView<?> parent) {
 			mSpinner.setSelection(0);
 		}
-		
+
 	}
 }

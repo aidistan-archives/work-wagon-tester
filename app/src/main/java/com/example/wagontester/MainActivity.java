@@ -38,7 +38,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
-	
+
 	private static final String[] SORT_BY_OPTIONS = {"全部", "按作业者", "按车型", "按车号", "按台位", "按日期", "按岗位"};
 	private static final int SORT_BY_ALL = 0;
 	private static final int SORT_BY_USER = 1;
@@ -52,31 +52,31 @@ public class MainActivity extends Activity {
 	private Spinner mSortBySpinner, mSpinner;
 	private AutoCompleteTextView mTextView;
 	private ListView mListView;
-	
+
 	// View adapters
 	private ArrayList<String> mArrayList;
 	private ListHelper mListHelper;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+
 		mArrayList = new ArrayList<String>();
 		mSpinner = (Spinner)findViewById(R.id.spinner);
 		mTextView = (AutoCompleteTextView)findViewById(R.id.textView);
-		
+
 		mSortBySpinner = (Spinner)findViewById(R.id.sortBySpinner);
 		mSortBySpinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, SORT_BY_OPTIONS));
 		mSortBySpinner.setOnItemSelectedListener(new SortBySpinnerListener());
-		
+
 		mListHelper = new ListHelper(this);
 		mListView = (ListView)findViewById(R.id.listView);
 		mListView.setAdapter(mListHelper);
 		mListView.setItemsCanFocus(false);
 		mListView.setOnItemClickListener(mListHelper);
 		mListView.setOnItemLongClickListener(mListHelper);
-		
+
 		mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -93,13 +93,13 @@ public class MainActivity extends Activity {
 			}
 		});
 	}
-	
+
 	@Override
 	public void onRestart() {
 		super.onRestart();
 		mListHelper.requery();
 	}
-	
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
@@ -111,13 +111,13 @@ public class MainActivity extends Activity {
 			return super.onKeyDown(keyCode, event);
 		}
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		new MenuInflater(this).inflate(R.menu.activity_main, menu);
 		return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
 		Intent intent;
@@ -130,25 +130,25 @@ public class MainActivity extends Activity {
 		case R.id.upload:
 			// Tasks to upload
 			ArrayList<Integer> taskList = new ArrayList<Integer>();
-			Cursor c = getContentResolver().query(DBContract.TaskTable.CONTENT_URI, new String[] {"_id"}, 
+			Cursor c = getContentResolver().query(DBContract.TaskTable.CONTENT_URI, new String[] {"_id"},
 					DBContract.TaskTable.KEY_STATUS + "=1", null, null);
 			for(c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
 				taskList.add(c.getInt(0));
 			}
 			c.close();
-			
+
 			// Check
 			if (taskList.size() == 0) {
 				Toast.makeText(this, "无需导出", Toast.LENGTH_SHORT).show();
 				break;
 			}
-					
+
 			File root = Environment.getExternalStorageDirectory();
 			root = new File(root.toURI().resolve("货车检查仪"));
 			if (!root.exists()) {
 				root.mkdir();
 			}
-			
+
 			// Each task
 			for(int task_id : taskList) {
 				File task_dir = new File(root.toURI().resolve(String.valueOf(task_id)));
@@ -157,31 +157,31 @@ public class MainActivity extends Activity {
 
 				try {
 					FileOutputStream fOut = new FileOutputStream(task_file);
-					
+
 					// Task
-					c = getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null, 
+					c = getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null,
 							"_id=" + String.valueOf(task_id), null, null);
 					c.moveToFirst();
 					fOut.write("====================\r\n".getBytes());
 					fOut.write(("车号：" + c.getString(DBContract.TaskTable.POS_WAGON) + "\r\n").getBytes());
 					fOut.write(("型号：" + c.getString(DBContract.TaskTable.POS_MODEL) + "\r\n").getBytes());
 					fOut.write(("台号：" + c.getString(DBContract.TaskTable.POS_PLATFORM) + "\r\n").getBytes());
-					
-					Cursor cc = getContentResolver().query(DBContract.UserTable.CONTENT_URI, 
+
+					Cursor cc = getContentResolver().query(DBContract.UserTable.CONTENT_URI,
 							null, "_id="+String.valueOf(c.getInt(DBContract.TaskTable.POS_USER)), null, null);
 					cc.moveToFirst();
 					fOut.write(("作业者：" + cc.getString(DBContract.UserTable.POS_NAME) + "\r\n").getBytes());
-					
-					cc = getContentResolver().query(DBContract.DutyTable.CONTENT_URI, 
+
+					cc = getContentResolver().query(DBContract.DutyTable.CONTENT_URI,
 							null, "_id="+String.valueOf(c.getInt(DBContract.TaskTable.POS_DUTY)), null, null);
 					cc.moveToFirst();
 					fOut.write(("岗位：" + cc.getString(DBContract.DutyTable.POS_NAME) + "\r\n").getBytes());
-					
+
 					fOut.write(("日期：" + c.getString(DBContract.TaskTable.POS_DATE) + "\r\n").getBytes());
 					fOut.write("====================\r\n".getBytes());
 					fOut.write("\r\n".getBytes());
 					c.close();
-					
+
 					// Parts
 					String part, fault, image;
 					String old_path, new_path;
@@ -204,7 +204,7 @@ public class MainActivity extends Activity {
 						} else {
 							image = new File(old_path).getName();
 							new_path = task_dir + "/" + image;
-							
+
 							InputStream is = new FileInputStream(old_path);
 				            OutputStream os = new FileOutputStream(new_path);
 				            byte[] buff=new byte[1024];
@@ -220,7 +220,7 @@ public class MainActivity extends Activity {
 						fOut.write("\r\n".getBytes());
 					}
 					c.close();
-					
+
 					fOut.flush();
 					fOut.close();
 				} catch (FileNotFoundException e) {
@@ -228,10 +228,10 @@ public class MainActivity extends Activity {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				
+
 				WagonTester.deleteTask(task_id);
 			}
-			
+
 			// In the end
 			Toast.makeText(this, "导出完成", Toast.LENGTH_SHORT).show();
 			mListHelper.requery();
@@ -246,31 +246,31 @@ public class MainActivity extends Activity {
 		}
 		return true;
 	}
-	
+
 	private class SortBySpinnerListener implements AdapterView.OnItemSelectedListener {
 
 		@Override
 		public void onNothingSelected(AdapterView<?> arg0) {
 			mSortBySpinner.setSelection(SORT_BY_ALL);
 		}
-		
+
 		@Override
 		public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 			// Clear
 			mTextView.setText("");
-			
+
 			// Data
 			if (position == SORT_BY_ALL) {
 				mListHelper.requery();
 			} else {
 				Cursor cursor = null;
 				ArrayList<Integer> idList = new ArrayList<Integer>();
-				
+
 				mArrayList.clear();
 				switch (position) {
 					case SORT_BY_USER:
 						// Get user ids
-						cursor = getContentResolver().query(DBContract.TaskTable.CONTENT_URI, 
+						cursor = getContentResolver().query(DBContract.TaskTable.CONTENT_URI,
 								new String[] {DBContract.TaskTable.KEY_USER}, null, null, DBContract.TaskTable.KEY_USER);
 						for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
 						{
@@ -279,11 +279,11 @@ public class MainActivity extends Activity {
 							}
 						}
 						cursor.close();
-						
+
 						// Get user names
 						for(Integer user_id : idList) {
 							cursor = getContentResolver().query(
-									Uri.withAppendedPath(DBContract.UserTable.CONTENT_URI, String.valueOf(user_id)), 
+									Uri.withAppendedPath(DBContract.UserTable.CONTENT_URI, String.valueOf(user_id)),
 									new String[] {DBContract.UserTable.KEY_NAME}, null, null, null);
 							cursor.moveToFirst();
 							mArrayList.add(cursor.getString(0));
@@ -292,7 +292,7 @@ public class MainActivity extends Activity {
 						break;
 					case SORT_BY_DUTY:
 						// Get duty ids
-						cursor = getContentResolver().query(DBContract.TaskTable.CONTENT_URI, 
+						cursor = getContentResolver().query(DBContract.TaskTable.CONTENT_URI,
 								new String[] {DBContract.TaskTable.KEY_DUTY}, null, null, DBContract.TaskTable.KEY_DUTY);
 						for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
 						{
@@ -301,11 +301,11 @@ public class MainActivity extends Activity {
 							}
 						}
 						cursor.close();
-						
+
 						// Get duty names
 						for(Integer duty_id : idList) {
 							cursor = getContentResolver().query(
-									Uri.withAppendedPath(DBContract.DutyTable.CONTENT_URI, String.valueOf(duty_id)), 
+									Uri.withAppendedPath(DBContract.DutyTable.CONTENT_URI, String.valueOf(duty_id)),
 									new String[] {DBContract.DutyTable.KEY_NAME}, null, null, null);
 							cursor.moveToFirst();
 							mArrayList.add(cursor.getString(0));
@@ -313,7 +313,7 @@ public class MainActivity extends Activity {
 						}
 						break;
 					case SORT_BY_MODEL:
-						cursor = getContentResolver().query(DBContract.TaskTable.CONTENT_URI, 
+						cursor = getContentResolver().query(DBContract.TaskTable.CONTENT_URI,
 								new String[] {DBContract.TaskTable.KEY_MODEL}, null, null, DBContract.TaskTable.KEY_MODEL);
 						for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
 						{
@@ -324,7 +324,7 @@ public class MainActivity extends Activity {
 						cursor.close();
 						break;
 					case SORT_BY_WAGON:
-						cursor = getContentResolver().query(DBContract.TaskTable.CONTENT_URI, 
+						cursor = getContentResolver().query(DBContract.TaskTable.CONTENT_URI,
 								new String[] {DBContract.TaskTable.KEY_WAGON}, null, null, DBContract.TaskTable.KEY_WAGON);
 						for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
 						{
@@ -335,7 +335,7 @@ public class MainActivity extends Activity {
 						cursor.close();
 						break;
 					case SORT_BY_PLATFORM:
-						cursor = getContentResolver().query(DBContract.TaskTable.CONTENT_URI, 
+						cursor = getContentResolver().query(DBContract.TaskTable.CONTENT_URI,
 								new String[] {DBContract.TaskTable.KEY_PLATFORM}, null, null, DBContract.TaskTable.KEY_PLATFORM);
 						for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
 						{
@@ -346,7 +346,7 @@ public class MainActivity extends Activity {
 						cursor.close();
 						break;
 					case SORT_BY_DATE:
-						cursor = getContentResolver().query(DBContract.TaskTable.CONTENT_URI, 
+						cursor = getContentResolver().query(DBContract.TaskTable.CONTENT_URI,
 								new String[] {DBContract.TaskTable.KEY_DATE}, null, null, DBContract.TaskTable.KEY_DATE);
 						for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
 						{
@@ -398,7 +398,7 @@ public class MainActivity extends Activity {
 			}
 		}
 	}
-	
+
 	private class ListHelper extends CursorAdapter implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
 		public ListHelper(Context context) {
@@ -406,31 +406,31 @@ public class MainActivity extends Activity {
 		}
 
 		@Override
-		public void bindView(View view, Context context, Cursor cursor) {  
+		public void bindView(View view, Context context, Cursor cursor) {
 			TaskView taskView = (TaskView)view;
-			
+
 			// Icon
 			if (cursor.getInt(DBContract.TaskTable.POS_STATUS) == 1) {
 				taskView.imageView.setVisibility(View.VISIBLE);
 			} else {
 				taskView.imageView.setVisibility(View.INVISIBLE);
 			}
-			
+
 			// String
 			taskView.wagonView.setText(cursor.getString(DBContract.TaskTable.POS_WAGON));
 			taskView.platformView.setText(cursor.getString(DBContract.TaskTable.POS_PLATFORM));
 			taskView.dateView.setText(cursor.getString(DBContract.TaskTable.POS_DATE));
 			taskView.modelView.setText(cursor.getString(DBContract.TaskTable.POS_MODEL));
-			
+
 			// ID
 			Cursor c;
 			c = context.getContentResolver().query(
-					Uri.withAppendedPath(DBContract.UserTable.CONTENT_URI, String.valueOf(cursor.getInt(DBContract.TaskTable.POS_USER))), 
+					Uri.withAppendedPath(DBContract.UserTable.CONTENT_URI, String.valueOf(cursor.getInt(DBContract.TaskTable.POS_USER))),
 					null, null, null, null);
 			c.moveToFirst();
 			taskView.userView.setText(c.getString(DBContract.UserTable.POS_NAME));
 			c = context.getContentResolver().query(
-					Uri.withAppendedPath(DBContract.DutyTable.CONTENT_URI, String.valueOf(cursor.getInt(DBContract.TaskTable.POS_DUTY))), 
+					Uri.withAppendedPath(DBContract.DutyTable.CONTENT_URI, String.valueOf(cursor.getInt(DBContract.TaskTable.POS_DUTY))),
 					null, null, null, null);
 			c.moveToFirst();
 			taskView.dutyView.setText(c.getString(DBContract.DutyTable.POS_NAME));
@@ -440,44 +440,44 @@ public class MainActivity extends Activity {
 		public View newView(Context context, Cursor cursor, ViewGroup parent) {
 			return new TaskView(context, null);
 		}
-		
+
 		public void requery() {
 			Cursor c;
-			
+
 			switch (mSortBySpinner.getSelectedItemPosition()) {
 			case SORT_BY_ALL:
 				changeCursor(getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null, null, null, null));
 				break;
 			case SORT_BY_USER:
-				c = getContentResolver().query(DBContract.UserTable.CONTENT_URI, null, 
+				c = getContentResolver().query(DBContract.UserTable.CONTENT_URI, null,
 						DBContract.UserTable.KEY_NAME + "=?", new String[] {(String)mSpinner.getSelectedItem()}, null);
 				c.moveToFirst();
-				changeCursor(getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null, 
+				changeCursor(getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null,
 						DBContract.TaskTable.KEY_USER + "=" + String.valueOf(c.getInt(0)), null, null));
 				c.close();
 				break;
 			case SORT_BY_DUTY:
-				c = getContentResolver().query(DBContract.DutyTable.CONTENT_URI, null, 
+				c = getContentResolver().query(DBContract.DutyTable.CONTENT_URI, null,
 						DBContract.DutyTable.KEY_NAME + "=?", new String[] {(String)mSpinner.getSelectedItem()}, null);
 				c.moveToFirst();
-				changeCursor(getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null, 
+				changeCursor(getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null,
 						DBContract.TaskTable.KEY_DUTY + "=" + String.valueOf(c.getInt(0)), null, null));
 				c.close();
 				break;
 			case SORT_BY_MODEL:
-				changeCursor(getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null, 
+				changeCursor(getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null,
 						DBContract.TaskTable.KEY_MODEL + "=?", new String[] {mTextView.getText().toString()}, null));
 				break;
 			case SORT_BY_WAGON:
-				changeCursor(getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null, 
+				changeCursor(getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null,
 						DBContract.TaskTable.KEY_WAGON + "=?", new String[] {mTextView.getText().toString()}, null));
 				break;
 			case SORT_BY_PLATFORM:
-				changeCursor(getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null, 
+				changeCursor(getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null,
 						DBContract.TaskTable.KEY_PLATFORM + "=?", new String[] {mTextView.getText().toString()}, null));
 				break;
 			case SORT_BY_DATE:
-				changeCursor(getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null, 
+				changeCursor(getContentResolver().query(DBContract.TaskTable.CONTENT_URI, null,
 						DBContract.TaskTable.KEY_DATE + "=?", new String[] {mTextView.getText().toString()}, null));
 				break;
 			}
