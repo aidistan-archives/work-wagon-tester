@@ -7,25 +7,25 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DBHelper extends SQLiteOpenHelper {
 
 	public static final String DATABASE_NAME = "wagontester.db";
-	
+
 	// Singleton
 	static DBHelper mInstance = null;
-	
+
 	public static int getDatabaseVersion() {
-		return DBContract.VERSION + DBPresetter.VERSION<<8;
+		return DBContract.VERSION << 8 + DBPresetter.VERSION;
 	}
-	
+
 	public DBHelper(Context context) {
 		super(context, DATABASE_NAME, null, getDatabaseVersion());
 	}
-	
+
 	public static DBHelper getInstance(Context context) {
 		if (mInstance == null) {
 			mInstance = new DBHelper(context);
 		}
 		return mInstance;
 	}
-	
+
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(DBContract.UserTable.CMD_CREATE);
@@ -46,7 +46,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL(DBContract.ModelTable.CMD_DROP);
 		db.execSQL(DBContract.TaskTable.CMD_DROP);
 		db.execSQL(DBContract.ContentTable.CMD_DROP);
-		
+
 		onCreate(db);
 	}
 }

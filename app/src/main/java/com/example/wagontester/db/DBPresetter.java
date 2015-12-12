@@ -7,10 +7,10 @@ public class DBPresetter {
 	public static final int VERSION = 11;
 
 	private static ContentResolver cr;
-  
+
 	public static void preset(ContentResolver contentResolver) {
 		cr = contentResolver;
-    
+
 		set_users();
 		set_duties();
 		set_faults();
@@ -43,7 +43,7 @@ public class DBPresetter {
 		int duty;
 		ContentValues cv_duty = new ContentValues();
 		ContentValues cv_part = new ContentValues();
-	
+
 		cv_duty.put(DBContract.DutyTable.KEY_NAME, "车体");
 		duty = Integer.parseInt(cr.insert(DBContract.DutyTable.CONTENT_URI, cv_duty).getLastPathSegment());
 		cv_part.put(DBContract.PartTable.KEY_DUTY, duty);
